@@ -3,6 +3,7 @@ import './placeorder.css';
 import { useStore } from '../../context/StoreContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const PlaceOrder = () => {
     const { getTotalCartAmount, token, food_list, cartItems, url } = useStore();
@@ -58,14 +59,15 @@ const PlaceOrder = () => {
                     const { session_url } = response.data;
                     window.location.replace(session_url);
                 } else {
+                    toast.success("Order placed successfully!");
                     navigate('/myorders'); 
                 }
             } else {
-                alert("Error: " + response.data.message);
+                toast.error(response.data.message || "Failed to place order");
             }
         } catch (error) {
             console.error("Order Error:", error);
-            alert("Something went wrong.");
+            toast.error("Something went wrong. Please try again.");
         }
     };
 

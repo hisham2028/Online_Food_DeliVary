@@ -14,17 +14,17 @@ class UserController {
       const { email, password } = req.body;
 
       if (!email || !password) {
-        return res.json({ success: false, message: "Please provide email and password" });
+        return res.status(400).json({ success: false, message: "Please provide email and password" });
       }
 
       const user = await this.userModel.findByEmail(email);
       if (!user) {
-        return res.json({ success: false, message: "User does not exist" });
+        return res.status(401).json({ success: false, message: "User does not exist" });
       }
 
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
-        return res.json({ success: false, message: "Invalid credentials" });
+        return res.status(401).json({ success: false, message: "Invalid credentials" });
       }
 
       const token = this.authMiddleware.generateToken(user._id);
@@ -40,20 +40,20 @@ class UserController {
       const { name, email, password } = req.body;
 
       if (!name || !email || !password) {
-        return res.json({ success: false, message: "Please provide name, email and password" });
+        return res.status(400).json({ success: false, message: "Please provide name, email and password" });
       }
 
       if (!validator.isEmail(email)) {
-        return res.json({ success: false, message: "Enter a Valid Email" });
+        return res.status(400).json({ success: false, message: "Enter a Valid Email" });
       }
 
       if (password.length < 6) {
-        return res.json({ success: false, message: "Enter a strong password" });
+        return res.status(400).json({ success: false, message: "Enter a strong password" });
       }
 
       const existingUser = await this.userModel.findByEmail(email);
       if (existingUser) {
-        return res.json({ success: false, message: "User Already Exists" });
+        return res.status(409).json({ success: false, message: "User Already Exists" });
       }
 
       const salt = await bcrypt.genSalt(10);

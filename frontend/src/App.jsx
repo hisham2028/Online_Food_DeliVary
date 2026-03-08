@@ -15,6 +15,7 @@ import MyOrders from './pages/myOrders/myorders';
 import Menu from './pages/Menu/menu';
 import BackToTop from './components/BackToTop/BackToTop';
 import ScrollToTop from './components/ScrollToTop/ScrollToTop';
+import NotFound from './pages/NotFound/NotFound';
 
 const App = () => {
   const location = useLocation();
@@ -73,6 +74,7 @@ const App = () => {
                 <Menu />
               </motion.div>
             } />
+            <Route path='*' element={<NotFound />} />
           </Routes>
         </AnimatePresence>
       </div>
