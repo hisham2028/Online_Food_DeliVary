@@ -87,6 +87,27 @@ class UserController {
       res.status(500).json({ success: false, message: "Server Error" });
     }
   }
+
+  updateProfile = async (req, res) => {
+    try {
+      const { name } = req.body;
+
+      if (!name || !name.trim()) {
+        return res.status(400).json({ success: false, message: "Name is required" });
+      }
+
+      const updatedUser = await this.userModel.updateById(req.body.userId, { name: name.trim() });
+      if (!updatedUser) {
+        return res.status(404).json({ success: false, message: "User not found" });
+      }
+
+      const { password, ...userWithoutPassword } = updatedUser.toObject();
+      res.json({ success: true, message: "Profile updated successfully", data: userWithoutPassword });
+    } catch (error) {
+      console.error("UPDATE PROFILE ERROR:", error);
+      res.status(500).json({ success: false, message: "Server Error" });
+    }
+  }
 }
 
 export default new UserController();

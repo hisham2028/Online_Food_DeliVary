@@ -34,7 +34,7 @@ export const useServices = () => {
 };
 // ──────────────────────────────────────────────────────────────────────────────
 
-const BASE_URL = 'http://localhost:4002';
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 
 const App = () => {
   const services = useMemo(() => {

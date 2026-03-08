@@ -17,7 +17,6 @@ import BackToTop from './components/BackToTop/BackToTop';
 import ScrollToTop from './components/ScrollToTop/ScrollToTop';
 
 const App = () => {
-  const url = "http://localhost:4002";
   const location = useLocation();
   
   const [showLogin, setShowLogin] = useState(false);
