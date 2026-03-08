@@ -1,7 +1,21 @@
 """
-Food Delivery Project – Comprehensive PDF Report Generator
+Food Delivery Project - University Report PDF Generator
+
+Sections:
+  1.  Introduction
+  2.  Project Objective
+  3.  System Architecture
+  4.  Technology Stack
+  5.  Modules
+  6.  Algorithms Used
+  7.  Database Design
+  8.  Code Structure
+  9.  GitHub Development Timeline
+  10. Testing
+  11. Future Improvements
 """
 
+import os
 from fpdf import FPDF
 from datetime import datetime
 
@@ -13,7 +27,6 @@ class ReportPDF(FPDF):
     GRAY = (100, 100, 100)
     LIGHT_BG = (250, 247, 243)
     WHITE = (255, 255, 255)
-    ACCENT = (255, 140, 0)
     SECTION_BG = (255, 245, 235)
 
     def header(self):
@@ -21,7 +34,7 @@ class ReportPDF(FPDF):
             return
         self.set_font("Helvetica", "B", 9)
         self.set_text_color(*self.GRAY)
-        self.cell(0, 8, "Food Delivery Platform - Project Report", align="L")
+        self.cell(0, 8, "Food Delivery Platform - University Project Report", align="L")
         self.cell(0, 8, f"Page {self.page_no()}", align="R", new_x="LMARGIN", new_y="NEXT")
         self.set_draw_color(*self.ORANGE)
         self.set_line_width(0.5)
@@ -62,11 +75,10 @@ class ReportPDF(FPDF):
         self.ln(2)
 
     def bullet(self, text, indent=15):
-        x = self.get_x()
         self.set_font("Helvetica", "", 10)
         self.set_text_color(*self.DARK)
-        self.set_x(x + indent)
-        self.cell(5, 6, chr(8226))
+        self.set_x(self.l_margin + indent)
+        self.cell(5, 6, "-")
         self.multi_cell(0, 6, text)
 
     def table(self, headers, rows, col_widths=None):
@@ -111,7 +123,7 @@ def build_report():
     pdf.cell(0, 15, "Food Delivery Platform", align="C", new_x="LMARGIN", new_y="NEXT")
     pdf.set_font("Helvetica", "", 18)
     pdf.set_text_color(*ReportPDF.DARK)
-    pdf.cell(0, 12, "Full-Stack Project Report", align="C", new_x="LMARGIN", new_y="NEXT")
+    pdf.cell(0, 12, "University Project Report", align="C", new_x="LMARGIN", new_y="NEXT")
     pdf.ln(6)
     pdf.set_draw_color(*ReportPDF.ORANGE)
     pdf.set_line_width(1)
@@ -125,8 +137,8 @@ def build_report():
         f"Date:               {datetime.now().strftime('%B %d, %Y')}",
         "Version:           1.0.0",
     ]
-    for l in lines:
-        pdf.cell(0, 9, l, align="C", new_x="LMARGIN", new_y="NEXT")
+    for line in lines:
+        pdf.cell(0, 9, line, align="C", new_x="LMARGIN", new_y="NEXT")
 
     # ════════════════════════════════════════════════════════════
     # TABLE OF CONTENTS
@@ -137,21 +149,17 @@ def build_report():
     pdf.cell(0, 12, "Table of Contents", align="C", new_x="LMARGIN", new_y="NEXT")
     pdf.ln(6)
     toc = [
-        ("1", "Project Overview"),
-        ("2", "System Architecture"),
-        ("3", "Technology Stack"),
-        ("4", "Backend Architecture"),
-        ("5", "Frontend Architecture (Customer App)"),
-        ("6", "Admin Panel Architecture"),
-        ("7", "Design Patterns Used"),
-        ("8", "Database Schema"),
-        ("9", "API Endpoints"),
-        ("10", "Authentication & Security"),
-        ("11", "Third-Party Integrations"),
-        ("12", "Testing Strategy"),
-        ("13", "Project File Structure"),
-        ("14", "Key Features Summary"),
-        ("15", "Deployment & Configuration"),
+        ("1", "Introduction"),
+        ("2", "Project Objective"),
+        ("3", "System Architecture"),
+        ("4", "Technology Stack"),
+        ("5", "Modules"),
+        ("6", "Algorithms Used"),
+        ("7", "Database Design"),
+        ("8", "Code Structure"),
+        ("9", "GitHub Development Timeline"),
+        ("10", "Testing"),
+        ("11", "Future Improvements"),
     ]
     for num, title in toc:
         pdf.set_font("Helvetica", "", 12)
@@ -161,38 +169,88 @@ def build_report():
     pdf.ln(4)
 
     # ════════════════════════════════════════════════════════════
-    # 1. PROJECT OVERVIEW
+    # 1. INTRODUCTION
     # ════════════════════════════════════════════════════════════
     pdf.add_page()
-    pdf.section_title("1", "Project Overview")
+    pdf.section_title("1", "Introduction")
     pdf.body_text(
-        "The Food Delivery Platform is a full-stack web application built using the MERN stack "
-        "(MongoDB, Express.js, React.js, Node.js). The project follows Object-Oriented Programming "
-        "(OOP) principles throughout its codebase, employing industry-standard design patterns such as "
-        "Singleton, Repository, Strategy, Factory, Observer, Adapter, and Dependency Injection."
+        "The Food Delivery Platform is a full-stack web application developed as a university "
+        "project to demonstrate modern software engineering principles in a real-world scenario. "
+        "The system replicates the core functionality of contemporary food delivery services "
+        "such as Uber Eats and DoorDash, providing a seamless experience for customers, "
+        "restaurant administrators, and delivery tracking."
     )
     pdf.body_text(
-        "The platform is composed of three independent sub-applications that share a common backend API:"
+        "The application is built using the MERN stack (MongoDB, Express.js, React.js, Node.js) "
+        "and strictly adheres to Object-Oriented Programming (OOP) principles throughout every "
+        "layer of the codebase. Industry-standard design patterns - including Singleton, "
+        "Repository, Strategy, Factory, Observer, Adapter, and Dependency Injection - are "
+        "deliberately applied to demonstrate software design best practices."
     )
-    pdf.bullet("Customer Frontend - A React 19 SPA for browsing, ordering, and tracking food.")
-    pdf.bullet("Admin Panel - A React 18 dashboard for managing food items, orders, and analytics.")
-    pdf.bullet("Backend API - A Node.js / Express RESTful server with MongoDB persistence.")
-    pdf.ln(2)
     pdf.body_text(
-        "The system supports user registration and login (including social login via Firebase), "
-        "a full shopping cart, Stripe-based checkout, real-time order status tracking, email "
-        "notifications, and an admin dashboard with analytics and order-filtering capabilities."
+        "The platform consists of three independent sub-applications that share a common "
+        "RESTful backend API:"
+    )
+    pdf.bullet("Customer Frontend - A React 19 SPA for browsing menus, managing a shopping cart, "
+               "and placing and tracking orders.")
+    pdf.bullet("Admin Panel - A React 18 dashboard for managing food inventory, viewing orders, "
+               "updating order statuses, and reviewing analytics.")
+    pdf.bullet("Backend API - A Node.js / Express server with MongoDB persistence, JWT "
+               "authentication, Stripe payment processing, and email notifications.")
+    pdf.ln(3)
+    pdf.body_text(
+        "This report documents the complete architecture, design decisions, algorithms, database "
+        "schema, development timeline, testing approach, and planned future improvements "
+        "for the Food Delivery Platform project."
     )
 
     # ════════════════════════════════════════════════════════════
-    # 2. SYSTEM ARCHITECTURE
+    # 2. PROJECT OBJECTIVE
     # ════════════════════════════════════════════════════════════
-    pdf.section_title("2", "System Architecture")
+    pdf.add_page()
+    pdf.section_title("2", "Project Objective")
     pdf.body_text(
-        "The system follows a three-tier architecture with clear separation of concerns:"
+        "The primary objectives of the Food Delivery Platform project are:"
     )
-    pdf.ln(2)
-    pdf.sub_title("High-Level Architecture Diagram")
+
+    pdf.sub_title("2.1 Academic Objectives")
+    pdf.bullet("Demonstrate proficiency in full-stack web development using the MERN stack.")
+    pdf.bullet("Apply Object-Oriented Programming principles throughout all application layers.")
+    pdf.bullet("Implement and document industry-standard software design patterns.")
+    pdf.bullet("Practise separation of concerns through a clear layered architecture.")
+    pdf.bullet("Integrate third-party services (Stripe, Firebase, Nodemailer) into a cohesive system.")
+    pdf.bullet("Write and maintain automated unit tests for UI components.")
+
+    pdf.ln(3)
+    pdf.sub_title("2.2 Functional Objectives")
+    pdf.bullet("Allow customers to browse food items by category and search by keyword.")
+    pdf.bullet("Provide a persistent shopping cart that synchronises with the backend for logged-in users.")
+    pdf.bullet("Enable secure checkout with Stripe's hosted payment page and cash-on-delivery option.")
+    pdf.bullet("Track order lifecycle through three statuses: Food Processing, Out for Delivery, Delivered.")
+    pdf.bullet("Support user registration and login via email/password and social login (Google, Facebook).")
+    pdf.bullet("Allow administrators to manage the food catalogue (add, list, remove items).")
+    pdf.bullet("Send email notifications to customers when their order status changes.")
+    pdf.bullet("Provide an admin analytics dashboard showing orders, revenue, and status breakdown.")
+
+    pdf.ln(3)
+    pdf.sub_title("2.3 Non-Functional Objectives")
+    pdf.bullet("Security - JWT authentication, bcrypt password hashing, API rate limiting.")
+    pdf.bullet("Scalability - Stateless REST API; MongoDB horizontal scaling support.")
+    pdf.bullet("Maintainability - OOP classes, single responsibility, dependency injection.")
+    pdf.bullet("Usability - Responsive design, smooth animations, toast notifications.")
+    pdf.bullet("Testability - Component-level unit tests with Vitest and Testing Library.")
+
+    # ════════════════════════════════════════════════════════════
+    # 3. SYSTEM ARCHITECTURE
+    # ════════════════════════════════════════════════════════════
+    pdf.add_page()
+    pdf.section_title("3", "System Architecture")
+    pdf.body_text(
+        "The system follows a three-tier client-server architecture with clear separation of "
+        "presentation, application, and data concerns."
+    )
+
+    pdf.sub_title("3.1 Architecture Diagram")
     pdf.set_font("Courier", "", 9)
     diagram = (
         "+---------------------+     +---------------------+\n"
@@ -217,668 +275,628 @@ def build_report():
         pdf.cell(0, 4.5, line, new_x="LMARGIN", new_y="NEXT")
     pdf.ln(4)
 
+    pdf.sub_title("3.2 Presentation Tier")
     pdf.body_text(
-        "Presentation Tier: Two React SPAs (Customer & Admin) communicate with the backend "
-        "exclusively via RESTful HTTP APIs. Each has its own Vite build pipeline."
+        "Two React SPAs communicate with the backend exclusively via RESTful HTTP APIs using "
+        "Axios. Each application has its own Vite build pipeline and is independently deployable. "
+        "Framer Motion provides animated page transitions in the customer frontend."
     )
+
+    pdf.sub_title("3.3 Application Tier")
     pdf.body_text(
-        "Application Tier: The Express.js server is structured using OOP classes — Server, "
-        "Controllers, Services, Models, Middleware — following the Single Responsibility Principle."
+        "The Express.js server is the single entry point for all API requests. It is structured "
+        "using OOP classes following the layered pattern: Routes -> Controllers -> Services -> "
+        "Models. Each layer has a single responsibility, and cross-cutting concerns (auth, "
+        "file upload, rate limiting) are handled by middleware."
     )
+
+    pdf.sub_title("3.4 Data Tier")
     pdf.body_text(
-        "Data Tier: MongoDB (via Mongoose ODM) stores Users, Food Items, and Orders. "
-        "Stripe handles payment processing. Firebase handles social authentication."
+        "MongoDB (via Mongoose ODM) persists three collections: users, foods, and orders. "
+        "Stripe handles payment session creation and verification. Firebase Authentication "
+        "provides OAuth 2.0 social login. Nodemailer delivers transactional emails via SMTP."
+    )
+
+    pdf.sub_title("3.5 Communication Flow")
+    pdf.table(
+        ["Step", "Actor", "Action"],
+        [
+            ["1", "Customer", "Browses menu; React fetches GET /api/food/list"],
+            ["2", "Customer", "Adds to cart; React calls POST /api/cart/add (JWT required)"],
+            ["3", "Customer", "Places order; backend creates Stripe session, returns URL"],
+            ["4", "Stripe", "Redirects to /verify after payment; backend updates order"],
+            ["5", "Admin", "Views orders; React fetches GET /api/order/list"],
+            ["6", "Admin", "Updates status; POST /api/order/status; EmailService notifies customer"],
+        ],
+        [10, 25, 155],
     )
 
     # ════════════════════════════════════════════════════════════
-    # 3. TECHNOLOGY STACK
+    # 4. TECHNOLOGY STACK
     # ════════════════════════════════════════════════════════════
     pdf.add_page()
-    pdf.section_title("3", "Technology Stack")
+    pdf.section_title("4", "Technology Stack")
 
-    pdf.sub_title("Backend")
+    pdf.sub_title("4.1 Backend")
     pdf.table(
         ["Technology", "Version", "Purpose"],
         [
-            ["Node.js", "v16+", "JavaScript runtime"],
-            ["Express.js", "4.18", "HTTP server / routing"],
-            ["MongoDB", "v5+", "NoSQL database"],
-            ["Mongoose", "8.1", "ODM for MongoDB"],
-            ["Stripe", "14.14", "Payment processing"],
-            ["JSON Web Token", "9.0", "Authentication tokens"],
-            ["bcryptjs", "2.4", "Password hashing"],
-            ["Multer", "1.4", "File upload handling"],
-            ["Nodemailer", "8.0", "Email notifications"],
-            ["express-rate-limit", "7.5", "API rate limiting"],
-            ["dotenv", "16.4", "Environment configuration"],
-            ["Nodemon", "3.0", "Development hot-reload"],
+            ["Node.js", "v16+", "JavaScript runtime environment"],
+            ["Express.js", "4.18", "HTTP server and routing framework"],
+            ["MongoDB", "v5+", "NoSQL document database"],
+            ["Mongoose", "8.1", "Object Document Mapper (ODM) for MongoDB"],
+            ["Stripe", "14.14", "Payment processing and checkout sessions"],
+            ["JSON Web Token", "9.0", "Stateless authentication tokens"],
+            ["bcryptjs", "2.4", "Password hashing and verification"],
+            ["Multer", "1.4", "Multipart form / file upload middleware"],
+            ["Nodemailer", "8.0", "Transactional email delivery via SMTP"],
+            ["express-rate-limit", "7.5", "API rate limiting per IP"],
+            ["validator", "13.11", "Email and input validation"],
+            ["dotenv", "16.4", "Environment variable configuration"],
+            ["Nodemon", "3.0", "Development server with hot-reload"],
         ],
-        [55, 30, 105],
+        [55, 25, 110],
     )
 
-    pdf.sub_title("Customer Frontend")
+    pdf.sub_title("4.2 Customer Frontend")
     pdf.table(
         ["Technology", "Version", "Purpose"],
         [
-            ["React", "19.2", "UI library"],
-            ["React Router DOM", "7.12", "Client-side routing"],
-            ["Vite", "7.2", "Build tool / dev server"],
-            ["Axios", "1.13", "HTTP client"],
-            ["Firebase", "12.9", "Social authentication"],
-            ["Framer Motion", "12.29", "Page transition animations"],
-            ["React Toastify", "11.0", "Toast notifications"],
-            ["Vitest", "4.0", "Unit testing framework"],
-            ["Testing Library", "16.3", "Component testing utilities"],
+            ["React", "19.2", "Component-based UI library"],
+            ["React Router DOM", "7.12", "Client-side routing and navigation"],
+            ["Vite", "7.2", "Fast build tool and development server"],
+            ["Axios", "1.13", "Promise-based HTTP client"],
+            ["Firebase", "12.9", "Google / Facebook social authentication"],
+            ["Framer Motion", "12.29", "Declarative animations and page transitions"],
+            ["React Toastify", "11.0", "In-app toast notification system"],
+            ["Vitest", "4.0", "Unit and component testing framework"],
+            ["Testing Library", "16.3", "User-centric component testing utilities"],
         ],
-        [55, 30, 105],
+        [55, 25, 110],
     )
 
-    pdf.sub_title("Admin Panel")
+    pdf.sub_title("4.3 Admin Panel")
     pdf.table(
         ["Technology", "Version", "Purpose"],
         [
-            ["React", "18.2", "UI library"],
-            ["React Router DOM", "6.18", "Client-side routing"],
-            ["Vite", "4.5", "Build tool / dev server"],
-            ["Axios", "1.6", "HTTP client"],
-            ["React Toastify", "9.1", "Toast notifications"],
-            ["Vitest", "0.34", "Unit testing framework"],
+            ["React", "18.2", "Component-based UI library"],
+            ["React Router DOM", "6.18", "Client-side routing and navigation"],
+            ["Vite", "4.5", "Build tool and development server"],
+            ["Axios", "1.6", "HTTP client for API communication"],
+            ["React Toastify", "9.1", "Toast notification system"],
+            ["Vitest", "0.34", "Unit and component testing framework"],
+            ["Testing Library", "14.0", "Component testing utilities"],
         ],
-        [55, 30, 105],
+        [55, 25, 110],
     )
 
     # ════════════════════════════════════════════════════════════
-    # 4. BACKEND ARCHITECTURE
+    # 5. MODULES
     # ════════════════════════════════════════════════════════════
     pdf.add_page()
-    pdf.section_title("4", "Backend Architecture")
+    pdf.section_title("5", "Modules")
+
+    pdf.sub_title("5.1 Backend Modules")
     pdf.body_text(
-        "The backend follows a layered OOP architecture. Every layer is implemented as ES6 classes "
-        "and exported as singleton instances to guarantee a single shared state."
+        "The backend is divided into six functional modules, each implemented as OOP classes:"
     )
-
-    pdf.sub_title("4.1 Layers")
-    pdf.bullet("Server (server.js) - Application entry point; initialises middleware, routes, and DB connection.")
-    pdf.bullet("Routes - Thin routing layer that maps HTTP verbs to controller methods and attaches middleware.")
-    pdf.bullet("Controllers - Receive requests, delegate to services, and return responses. No business logic.")
-    pdf.bullet("Services - Contain all business logic (CartService, FoodService, OrderService, UserService, StripeService, EmailService).")
-    pdf.bullet("Models - Mongoose schema definitions wrapped in OOP classes with CRUD helper methods.")
-    pdf.bullet("Middleware - Cross-cutting concerns: AuthMiddleware (JWT verification), FileUploadMiddleware (Multer).")
-    pdf.bullet("Config - Database singleton that manages the MongoDB connection.")
-
-    pdf.ln(3)
-    pdf.sub_title("4.2 Server Class")
-    pdf.body_text(
-        "The Server class in server.js is the composition root. It initialises Express, configures "
-        "CORS, JSON parsing, and rate limiting (100 requests / 15 min), registers all route modules, "
-        "serves static files from /uploads, and starts listening after a successful DB connection."
-    )
-
-    pdf.sub_title("4.3 Model Classes")
-    pdf.body_text(
-        "Each model (FoodModel, UserModel, OrderModel) encapsulates a Mongoose schema and exposes "
-        "async CRUD methods (create, findById, findAll, updateById, deleteById) plus domain-specific "
-        "helpers like UserModel.updateCart() and OrderModel.updateStatus(). Models are exported as "
-        "singleton instances."
-    )
-
-    pdf.sub_title("4.4 Service Classes")
     pdf.table(
-        ["Service", "Responsibility"],
+        ["Module", "Files", "Responsibility"],
         [
-            ["UserService", "Registration, login, password hashing, JWT creation, profile management"],
-            ["FoodService", "CRUD operations on food items, image handling, search"],
-            ["CartService", "Add / remove / get / clear cart items for authenticated users"],
-            ["OrderService", "Place orders, verify payments, track status, cancel orders"],
-            ["StripeService", "Create Stripe checkout sessions and payment intents"],
-            ["EmailService", "Send transactional emails via Nodemailer (order status updates)"],
+            ["Config", "Database.js", "Singleton MongoDB connection management"],
+            ["Models", "UserModel, FoodModel, OrderModel",
+             "Mongoose schemas with CRUD helper methods"],
+            ["Controllers", "UserController, FoodController, CartController, OrderController",
+             "HTTP request handling; delegates to services"],
+            ["Services", "UserService, FoodService, CartService, OrderService, StripeService, EmailService",
+             "All business logic and third-party integrations"],
+            ["Routes", "UserRoute, FoodRoute, CartRoute, OrderRoute",
+             "HTTP verb to controller method mapping"],
+            ["Middleware", "AuthMiddleware, FileUploadMiddleware",
+             "JWT verification and Multer file upload"],
         ],
-        [40, 150],
+        [25, 55, 110],
+    )
+
+    pdf.sub_title("5.2 Customer Frontend Modules")
+    pdf.table(
+        ["Module", "Key Files", "Responsibility"],
+        [
+            ["Pages", "Home, Menu, Cart, PlaceOrder, Verify, MyOrders",
+             "Route-level views for each user workflow"],
+            ["Components", "Navbar, FoodDisplay, FoodItem, Login, ExploreMenu, ...",
+             "Reusable UI building blocks"],
+            ["Context", "StoreContext.jsx",
+             "Global state: food list, cart, auth token"],
+            ["Services", "authService.js",
+             "Firebase OAuth flow and backend JWT sync"],
+            ["Adapters", "RepositoryAdapter.js",
+             "Adapter pattern for swappable data sources"],
+            ["Firebase", "firebaseConfig.js",
+             "Firebase app initialisation and auth provider setup"],
+        ],
+        [25, 55, 110],
+    )
+
+    pdf.sub_title("5.3 Admin Panel Modules")
+    pdf.table(
+        ["Module", "Key Files", "Responsibility"],
+        [
+            ["Pages", "Dashboard, Add, List, Orders",
+             "Admin views for analytics and management"],
+            ["Components", "Navbar, Sidebar",
+             "Admin layout components"],
+            ["Services", "ApiService.js",
+             "Singleton Axios client with interceptors"],
+            ["Repositories", "FoodRepository, OrderRepository",
+             "Abstracted HTTP data access layer"],
+            ["Models", "models/index.js",
+             "Domain classes: Order, FoodItem, Address, DashboardStats"],
+            ["Strategies", "OrderFilterStrategy.js",
+             "Strategy pattern for order time-period filtering"],
+            ["Factories", "FoodFormFactory.js",
+             "Factory for immutable food form data objects"],
+            ["Events", "EventBus.js",
+             "Observer / publish-subscribe decoupling mechanism"],
+        ],
+        [25, 55, 110],
     )
 
     # ════════════════════════════════════════════════════════════
-    # 5. FRONTEND ARCHITECTURE
+    # 6. ALGORITHMS USED
     # ════════════════════════════════════════════════════════════
     pdf.add_page()
-    pdf.section_title("5", "Frontend Architecture (Customer App)")
+    pdf.section_title("6", "Algorithms Used")
 
-    pdf.sub_title("5.1 Application Structure")
+    pdf.sub_title("6.1 Password Hashing - bcrypt")
     pdf.body_text(
-        "The customer-facing frontend is a React 19 single-page application built with Vite. "
-        "It uses React Router v7 for navigation with AnimatePresence (Framer Motion) for smooth "
-        "page transitions."
+        "User passwords are never stored in plain text. The bcryptjs library implements the "
+        "bcrypt adaptive hashing algorithm. A salt round factor of 10 is used, meaning 2^10 "
+        "iterations of the Blowfish cipher are applied. The salt is randomly generated per "
+        "password, preventing rainbow-table attacks. On login, bcrypt.compare() runs the "
+        "same algorithm on the submitted password and compares it to the stored hash in "
+        "constant time, preventing timing attacks."
     )
 
-    pdf.sub_title("5.2 Pages")
-    pdf.table(
-        ["Page", "Route", "Description"],
-        [
-            ["Home", "/", "Landing page with header, featured categories, food display"],
-            ["Menu", "/menu", "Full menu browsing with category filtering"],
-            ["Cart", "/cart", "Shopping cart with quantity management"],
-            ["Place Order", "/order", "Checkout form with delivery address"],
-            ["Verify", "/verify", "Stripe payment verification callback"],
-            ["My Orders", "/myorders", "Order history and status tracking"],
-            ["Not Found", "*", "404 error page"],
-        ],
-        [35, 30, 125],
-    )
-
-    pdf.sub_title("5.3 Key Components")
-    pdf.table(
-        ["Component", "Description"],
-        [
-            ["Navbar", "Navigation bar with cart badge and login trigger"],
-            ["Header", "Hero section with call-to-action"],
-            ["ExploreMenu", "Horizontal scrollable category selector"],
-            ["FeaturedCategories", "Visual category cards with hover animations"],
-            ["FoodDisplay", "Grid of food items filtered by category"],
-            ["FoodItem", "Individual food card with add-to-cart"],
-            ["Login", "Modal with email/password + social login (Google/Facebook)"],
-            ["Footer", "Site footer with links and social icons"],
-            ["BackToTop", "Scroll-to-top floating button"],
-            ["ScrollToTop", "Auto-scroll on route change"],
-            ["OrderConfirmation", "Post-checkout confirmation display"],
-            ["SpecialSections", "Promotional content sections"],
-            ["OurServices", "Service highlights section"],
-            ["AppDownload", "Mobile app download CTA"],
-        ],
-        [50, 140],
-    )
-
-    pdf.sub_title("5.4 State Management - StoreContext")
+    pdf.sub_title("6.2 JWT Token Generation and Verification")
     pdf.body_text(
-        "Global state is managed via React Context (StoreContext). It holds the food list, "
-        "cart items, authentication token, and loading state. It exposes helper functions: "
-        "addToCart, removeFromCart, getTotalCartAmount, getTotalCartItems. The cart is synced "
-        "with the backend for logged-in users via Axios API calls."
+        "Authentication tokens are generated using the HMAC-SHA256 (HS256) algorithm via the "
+        "jsonwebtoken library. The payload contains the user ID. The token is signed with a "
+        "secret key stored in environment variables and has a 7-day expiry. On each protected "
+        "request, the AuthMiddleware decodes and verifies the token signature and checks the "
+        "expiry claim before allowing access."
     )
 
-    pdf.sub_title("5.5 Authentication Service")
+    pdf.sub_title("6.3 Full-Text Search - MongoDB Text Index")
     pdf.body_text(
-        "The AuthService class integrates Firebase Authentication for social login (Google and "
-        "Facebook). After Firebase authentication, it sends the user profile to the backend's "
-        "/api/user/social-login endpoint to create or retrieve a JWT token."
+        "The Food collection has a compound text index on the name, description, and category "
+        "fields. When a search query is submitted, MongoDB's $text operator uses an inverted "
+        "index to find matching documents. Results are scored by relevance using TF-IDF "
+        "(term frequency-inverse document frequency) weighting. The query is case-insensitive "
+        "and stop-word filtered."
     )
 
-    pdf.sub_title("5.6 Adapter Pattern - RepositoryAdapter")
+    pdf.sub_title("6.4 Shopping Cart Aggregation")
     pdf.body_text(
-        "The frontend includes a RepositoryAdapter module that defines an IRepository interface "
-        "and adapters (MongooseAdapter, SQLAdapter) via a RepositoryFactory. This enables swapping "
-        "the data layer without modifying consuming components."
+        "The cart is stored as a map (object) in the User document: { foodId: quantity }. "
+        "To compute the cart total, the frontend iterates over all cart entries, looks up "
+        "the price of each food item from the global food list, and accumulates the sum "
+        "(O(n) linear scan). Items with quantity zero are excluded from the display."
+    )
+
+    pdf.sub_title("6.5 Order Filtering - Strategy Pattern")
+    pdf.body_text(
+        "The admin panel filters orders by time period using interchangeable strategy objects. "
+        "Each strategy (AllTimeStrategy, TodayStrategy, WeekStrategy, MonthStrategy, "
+        "YearStrategy) implements a filter(orders) method. The Order domain model's "
+        "isWithin(period) helper computes whether the order date falls within the requested "
+        "window by comparing Unix timestamps. Adding a new period requires implementing "
+        "one new strategy class with zero changes to existing code."
+    )
+
+    pdf.sub_title("6.6 Dashboard Statistics Aggregation")
+    pdf.body_text(
+        "The DashboardStats class computes analytics over the filtered order list in a single "
+        "pass (O(n)): total order count, total revenue (sum of order amounts), and counts of "
+        "orders in each status bucket (Food Processing, Out for Delivery, Delivered). The "
+        "formattedRevenue getter formats the monetary value as a localised currency string."
+    )
+
+    pdf.sub_title("6.7 Stripe Payment Session Creation")
+    pdf.body_text(
+        "When a customer places an order, the StripeService maps each cart item to a Stripe "
+        "line-item object (name, price in cents, quantity). A fixed delivery fee line item "
+        "of $2.00 is appended. The Stripe SDK then creates a hosted checkout session via "
+        "the HTTPS API, returning a session URL. The frontend redirects the customer to "
+        "this URL for secure card entry. After payment, Stripe calls the configured success "
+        "or cancel redirect URL, and the backend verifies the session status."
     )
 
     # ════════════════════════════════════════════════════════════
-    # 6. ADMIN PANEL
+    # 7. DATABASE DESIGN
     # ════════════════════════════════════════════════════════════
     pdf.add_page()
-    pdf.section_title("6", "Admin Panel Architecture")
+    pdf.section_title("7", "Database Design")
     pdf.body_text(
-        "The admin panel is a React 18 SPA that follows a rich OOP architecture with multiple "
-        "design patterns. It uses a ServiceContext for dependency injection and domain models for "
-        "all data transformations."
+        "The application uses MongoDB, a document-oriented NoSQL database, accessed through "
+        "the Mongoose ODM. Three collections store all application data."
     )
 
-    pdf.sub_title("6.1 Pages")
+    pdf.sub_title("7.1 Entity-Relationship Overview")
+    pdf.set_font("Courier", "", 9)
+    er = (
+        "  +----------+        +----------+        +-----------+\n"
+        "  |   User   | 1    * |  Order   | *    * |   Food    |\n"
+        "  |----------|--------|----------|--------|-----------||\n"
+        "  | _id      |        | _id      |        | _id       |\n"
+        "  | name     |        | userId   |        | name      |\n"
+        "  | email    |        | items[]  |        | description|\n"
+        "  | password |        | amount   |        | price     |\n"
+        "  | cartData |        | address  |        | image     |\n"
+        "  +----------+        | status   |        | category  |\n"
+        "                      | payment  |        | isAvailable|\n"
+        "                      | date     |        +-----------+\n"
+        "                      +----------+\n"
+    )
+    for line in er.split("\n"):
+        pdf.cell(0, 4.5, line, new_x="LMARGIN", new_y="NEXT")
+    pdf.ln(4)
+
+    pdf.sub_title("7.2 User Collection")
     pdf.table(
-        ["Page", "Route", "Description"],
+        ["Field", "Type", "Constraints / Notes"],
         [
-            ["Dashboard", "/ , /dashboard", "Analytics: total orders, revenue, status breakdown"],
-            ["Add", "/add", "Add new food item with image upload"],
-            ["List", "/list", "View and manage all food items"],
-            ["Orders", "/orders", "View and update order statuses"],
-        ],
-        [35, 40, 115],
-    )
-
-    pdf.sub_title("6.2 Service Layer")
-    pdf.body_text(
-        "ApiService (Singleton): A single Axios instance for the entire app. Handles base URL, "
-        "timeout (10s), auth token injection via request interceptor, and error normalisation via "
-        "response interceptor. Exposes get(), post(), and postForm() methods."
-    )
-
-    pdf.sub_title("6.3 Repository Layer")
-    pdf.body_text(
-        "FoodRepository and OrderRepository abstract all HTTP calls behind clean async methods "
-        "(getAll, add, remove, updateStatus). Components never interact with raw HTTP — they "
-        "depend only on repository abstractions."
-    )
-
-    pdf.sub_title("6.4 Domain Models")
-    pdf.body_text(
-        "Rich domain models transform raw API data into typed objects with computed properties:"
-    )
-    pdf.bullet("Order - shortId, formattedAmount, formattedDate, itemSummary, statusClass, isWithin(period)")
-    pdf.bullet("OrderItem - name, quantity, toString()")
-    pdf.bullet("Address - fullName, cityLine, singleLine")
-    pdf.bullet("FoodItem - formattedPrice")
-    pdf.bullet("DashboardStats - totalOrders, totalRevenue, formattedRevenue, status breakdowns")
-
-    pdf.sub_title("6.5 EventBus (Observer Pattern)")
-    pdf.body_text(
-        "A singleton EventBus enables decoupled communication between components. Named event "
-        "constants (FOOD_ADDED, FOOD_REMOVED, ORDER_STATUS_CHANGED, SIDEBAR_TOGGLE) prevent "
-        "magic strings. Components subscribe with on() and publish with emit()."
-    )
-
-    # ════════════════════════════════════════════════════════════
-    # 7. DESIGN PATTERNS
-    # ════════════════════════════════════════════════════════════
-    pdf.add_page()
-    pdf.section_title("7", "Design Patterns Used")
-
-    patterns = [
-        ("Singleton", "Backend",
-         "All Models, Services, and the Database config are exported as singleton instances "
-         "(e.g., `export default new FoodModel()`). Ensures one shared instance across the app."),
-        ("Singleton", "Admin",
-         "ApiService uses a private static #instance field with getInstance() to guarantee a "
-         "single Axios client. EventBus also follows the Singleton pattern."),
-        ("Repository", "Admin",
-         "FoodRepository and OrderRepository encapsulate all API calls. Components depend on "
-         "these abstractions, never on raw HTTP, enabling easy backend swaps."),
-        ("Strategy", "Admin",
-         "OrderFilterStrategy implements interchangeable time-period filters (AllTime, Today, "
-         "Week, Month, Year). Adding a new filter requires zero changes to existing code (Open/Closed Principle)."),
-        ("Factory", "Admin",
-         "FoodFormFactory centralises creation and immutable updates of FoodFormData objects. "
-         "Provides createEmpty(), create(overrides), and withField() static methods."),
-        ("Observer", "Admin",
-         "EventBus (publish/subscribe) decouples components. When food is added, an event is "
-         "emitted and any listening component reacts without direct coupling."),
-        ("Adapter", "Frontend",
-         "RepositoryAdapter defines an IRepository interface with MongooseAdapter and SQLAdapter "
-         "implementations, created via a RepositoryFactory."),
-        ("Dependency Injection", "Admin",
-         "Services are instantiated once in App.jsx and injected into the component tree via "
-         "React Context (ServiceContext). Components call useServices() to access them."),
-        ("MVC / Layered", "Backend",
-         "Routes -> Controllers -> Services -> Models. Each layer has a single responsibility. "
-         "Controllers never contain business logic; Services never handle HTTP."),
-        ("Context Pattern", "Frontend",
-         "StoreContext provides global state (food list, cart, auth token) to all components "
-         "without prop drilling, using React's createContext and useContext."),
-    ]
-
-    pdf.table(
-        ["Pattern", "Layer", "Implementation Details"],
-        patterns,
-        [30, 20, 140],
-    )
-
-    # ════════════════════════════════════════════════════════════
-    # 8. DATABASE SCHEMA
-    # ════════════════════════════════════════════════════════════
-    pdf.section_title("8", "Database Schema")
-    pdf.sub_title("8.1 User Collection")
-    pdf.table(
-        ["Field", "Type", "Constraints"],
-        [
+            ["_id", "ObjectId", "Auto-generated primary key"],
             ["name", "String", "Required"],
-            ["email", "String", "Required, Unique"],
-            ["password", "String", "Required"],
-            ["cartData", "Object", "Default: {}"],
-            ["resetPasswordToken", "String", "Optional"],
-            ["resetPasswordExpire", "Date", "Optional"],
-            ["createdAt / updatedAt", "Date", "Auto (timestamps)"],
+            ["email", "String", "Required, Unique, validated by validator lib"],
+            ["password", "String", "Required, bcrypt hash"],
+            ["cartData", "Object", "Default: {}  -  map of { foodId: quantity }"],
+            ["resetPasswordToken", "String", "Optional, for password-reset flow"],
+            ["resetPasswordExpire", "Date", "Optional, token expiry timestamp"],
+            ["createdAt / updatedAt", "Date", "Auto-managed by Mongoose timestamps"],
         ],
-        [55, 40, 95],
+        [45, 30, 115],
     )
 
-    pdf.sub_title("8.2 Food Collection")
+    pdf.sub_title("7.3 Food Collection")
     pdf.table(
-        ["Field", "Type", "Constraints"],
+        ["Field", "Type", "Constraints / Notes"],
         [
-            ["name", "String", "Required, text-indexed"],
-            ["description", "String", "Required, text-indexed"],
-            ["price", "Number", "Required, min: 0"],
-            ["image", "String", "Required"],
-            ["category", "String", "Required, text-indexed"],
+            ["_id", "ObjectId", "Auto-generated primary key"],
+            ["name", "String", "Required; part of text index"],
+            ["description", "String", "Required; part of text index"],
+            ["price", "Number", "Required; min: 0"],
+            ["image", "String", "Required; filename of uploaded image"],
+            ["category", "String", "Required; enum: Salad, Rolls, Deserts, Sandwich, Cake, Veg, Pasta, Noodles; part of text index"],
             ["isAvailable", "Boolean", "Default: true"],
-            ["createdAt / updatedAt", "Date", "Auto (timestamps)"],
+            ["createdAt / updatedAt", "Date", "Auto-managed by Mongoose timestamps"],
         ],
-        [55, 40, 95],
+        [45, 30, 115],
     )
 
-    pdf.sub_title("8.3 Order Collection")
+    pdf.sub_title("7.4 Order Collection")
     pdf.table(
-        ["Field", "Type", "Constraints"],
+        ["Field", "Type", "Constraints / Notes"],
         [
-            ["userId", "String", "Required"],
-            ["items", "Array", "Required"],
-            ["amount", "Number", "Required"],
-            ["address", "Object", "Required"],
-            ["status", "String", "Default: 'Food Processing'"],
+            ["_id", "ObjectId", "Auto-generated primary key"],
+            ["userId", "String", "Required; references User._id"],
+            ["items", "Array", "Required; array of { name, quantity, _id (Food ref) }"],
+            ["amount", "Number", "Required; total order value including delivery fee"],
+            ["address", "Object", "Required; firstName, lastName, street, city, state, country, zipcode, phone"],
+            ["status", "String", "Default: 'Food Processing'; enum: Food Processing, Out for Delivery, Delivered"],
+            ["payment", "Boolean", "Default: false; true after Stripe verification"],
             ["date", "Date", "Default: Date.now"],
-            ["payment", "Boolean", "Default: false"],
         ],
-        [55, 40, 95],
+        [45, 30, 115],
+    )
+
+    pdf.sub_title("7.5 Indexes")
+    pdf.table(
+        ["Collection", "Index Type", "Fields", "Purpose"],
+        [
+            ["User", "Unique", "email", "Prevent duplicate registrations"],
+            ["Food", "Text", "name, description, category", "Full-text search functionality"],
+        ],
+        [30, 25, 60, 75],
     )
 
     # ════════════════════════════════════════════════════════════
-    # 9. API ENDPOINTS
+    # 8. CODE STRUCTURE
     # ════════════════════════════════════════════════════════════
     pdf.add_page()
-    pdf.section_title("9", "API Endpoints")
-
-    pdf.sub_title("9.1 User Routes  /api/user")
-    pdf.table(
-        ["Method", "Endpoint", "Auth", "Description"],
-        [
-            ["POST", "/register", "No", "Register a new user"],
-            ["POST", "/login", "No", "Login and receive JWT"],
-            ["GET", "/profile", "Yes", "Get authenticated user profile"],
-            ["POST", "/social-login", "No", "Firebase social login (Google/Facebook)"],
-        ],
-        [20, 45, 15, 110],
-    )
-
-    pdf.sub_title("9.2 Food Routes  /api/food")
-    pdf.table(
-        ["Method", "Endpoint", "Auth", "Description"],
-        [
-            ["POST", "/add", "No", "Add food item (multipart form with image)"],
-            ["GET", "/list", "No", "Get all food items"],
-            ["POST", "/remove", "No", "Remove a food item by ID"],
-            ["PUT", "/update/:id", "No", "Update a food item"],
-            ["GET", "/search", "No", "Full-text search on food items"],
-        ],
-        [20, 45, 15, 110],
-    )
-
-    pdf.sub_title("9.3 Cart Routes  /api/cart")
-    pdf.table(
-        ["Method", "Endpoint", "Auth", "Description"],
-        [
-            ["POST", "/add", "Yes", "Add item to cart"],
-            ["POST", "/remove", "Yes", "Remove item from cart"],
-            ["POST", "/get", "Yes", "Get current user's cart"],
-            ["POST", "/clear", "Yes", "Clear entire cart"],
-        ],
-        [20, 45, 15, 110],
-    )
-
-    pdf.sub_title("9.4 Order Routes  /api/order")
-    pdf.table(
-        ["Method", "Endpoint", "Auth", "Description"],
-        [
-            ["POST", "/place", "Yes", "Place a new order (creates Stripe session)"],
-            ["POST", "/verify", "No", "Verify Stripe payment callback"],
-            ["POST", "/userorders", "Yes", "Get orders for authenticated user"],
-            ["GET", "/list", "No", "Get all orders (admin)"],
-            ["POST", "/status", "No", "Update order status (admin)"],
-            ["GET", "/:id", "No", "Get a single order by ID"],
-            ["POST", "/cancel", "Yes", "Cancel an order"],
-        ],
-        [20, 45, 15, 110],
-    )
-
-    # ════════════════════════════════════════════════════════════
-    # 10. AUTHENTICATION & SECURITY
-    # ════════════════════════════════════════════════════════════
-    pdf.add_page()
-    pdf.section_title("10", "Authentication & Security")
-
-    pdf.sub_title("10.1 JWT Authentication")
+    pdf.section_title("8", "Code Structure")
     pdf.body_text(
-        "User authentication is handled via JSON Web Tokens. On login or registration, the "
-        "server issues a JWT (expires in 7 days) signed with a secret from environment variables. "
-        "Protected routes use AuthMiddleware to verify the token sent in the 'token' header."
+        "The repository is organised as a monorepo with three top-level sub-applications "
+        "plus shared root configuration. Each sub-application is independently installable "
+        "and runnable."
     )
 
-    pdf.sub_title("10.2 Password Security")
-    pdf.body_text(
-        "Passwords are hashed using bcryptjs before storage. Minimum password length is 6 characters. "
-        "Input validation is performed using the validator library."
-    )
-
-    pdf.sub_title("10.3 Social Authentication (Firebase)")
-    pdf.body_text(
-        "The frontend integrates Firebase Authentication for Google and Facebook sign-in via popup. "
-        "After Firebase authenticates the user, the frontend sends the profile to the backend's "
-        "/api/user/social-login endpoint, which creates or finds the user and returns a JWT."
-    )
-
-    pdf.sub_title("10.4 Rate Limiting")
-    pdf.body_text(
-        "The API is protected by express-rate-limit: maximum 100 requests per 15-minute window "
-        "per IP address. Standard rate-limit headers are included in responses."
-    )
-
-    pdf.sub_title("10.5 CORS")
-    pdf.body_text(
-        "Cross-Origin Resource Sharing is enabled globally via the cors middleware, "
-        "allowing the frontend and admin panel to communicate with the backend from different origins."
-    )
-
-    # ════════════════════════════════════════════════════════════
-    # 11. THIRD-PARTY INTEGRATIONS
-    # ════════════════════════════════════════════════════════════
-    pdf.section_title("11", "Third-Party Integrations")
-
-    pdf.sub_title("11.1 Stripe Payments")
-    pdf.body_text(
-        "The StripeService class handles payment processing. When a user places an order, "
-        "it creates a Stripe Checkout Session with line items (food items + $2 delivery fee). "
-        "After payment, Stripe redirects to /verify with success status and order ID. "
-        "The backend then updates the order's payment status."
-    )
-
-    pdf.sub_title("11.2 Firebase Authentication")
-    pdf.body_text(
-        "Firebase provides Google and Facebook sign-in via signInWithPopup(). The AuthService "
-        "class on the frontend manages the entire flow and syncs with the backend."
-    )
-
-    pdf.sub_title("11.3 Nodemailer Email Service")
-    pdf.body_text(
-        "The EmailService class sends transactional emails via SMTP (configurable host, default "
-        "Gmail). It currently supports order status update notifications with HTML templates."
-    )
-
-    # ════════════════════════════════════════════════════════════
-    # 12. TESTING STRATEGY
-    # ════════════════════════════════════════════════════════════
-    pdf.add_page()
-    pdf.section_title("12", "Testing Strategy")
-
-    pdf.sub_title("12.1 Testing Framework")
-    pdf.body_text(
-        "The project uses Vitest as the test runner with @testing-library/react for component "
-        "testing and @testing-library/jest-dom for DOM assertions. JSDOM provides the browser "
-        "environment. Tests can be run via `npm test` or with a UI via `npm run test:ui`."
-    )
-
-    pdf.sub_title("12.2 Frontend Test Coverage")
-    pdf.table(
-        ["Test File", "Component Tested"],
-        [
-            ["App.test.jsx", "App - routing and layout"],
-            ["Navbar.test.jsx", "Navbar component"],
-            ["header.test.jsx", "Header / hero section"],
-            ["explore-menu.test.jsx", "Explore menu component"],
-            ["FoodDisply.test.jsx", "Food display grid"],
-            ["FoodItem.test.jsx", "Individual food item card"],
-            ["login.test.jsx", "Login modal"],
-            ["footer.test.jsx", "Footer component"],
-            ["AppDownload.test.jsx", "App download section"],
-            ["verify.test.jsx", "Payment verification page"],
-        ],
-        [65, 125],
-    )
-
-    pdf.sub_title("12.3 Admin Panel")
-    pdf.body_text(
-        "The admin panel has Vitest and Testing Library configured in its devDependencies "
-        "and package.json scripts (test, test:ui), ready for test implementation."
-    )
-
-    # ════════════════════════════════════════════════════════════
-    # 13. PROJECT FILE STRUCTURE
-    # ════════════════════════════════════════════════════════════
-    pdf.section_title("13", "Project File Structure")
     pdf.set_font("Courier", "", 8)
     structure = """Food-Del_upadated/
-|-- package.json                  (Root config)
+|-- package.json                     (Root config - concurrent dev scripts)
+|-- generate_report.py               (This report generator)
 |-- backend/
 |   |-- package.json
 |   |-- README.md
 |   |-- src/
-|   |   |-- server.js             (Server class - entry point)
+|   |   |-- server.js                (Server class - Express entry point)
 |   |   |-- config/
-|   |   |   +-- Database.js       (Singleton DB connection)
+|   |   |   +-- Database.js          (Singleton MongoDB connection)
 |   |   |-- controllers/
-|   |   |   |-- CartController.js
-|   |   |   |-- FoodController.js
-|   |   |   |-- OrderController.js
-|   |   |   +-- UserController.js
+|   |   |   |-- CartController.js    (Cart HTTP handlers)
+|   |   |   |-- FoodController.js    (Food HTTP handlers)
+|   |   |   |-- OrderController.js   (Order HTTP handlers)
+|   |   |   +-- UserController.js    (User HTTP handlers)
 |   |   |-- middleware/
-|   |   |   |-- AuthMiddleware.js  (JWT verification)
-|   |   |   +-- FileUploadMiddleware.js (Multer)
+|   |   |   |-- AuthMiddleware.js    (JWT token verification)
+|   |   |   +-- FileUploadMiddleware.js  (Multer image upload)
 |   |   |-- models/
-|   |   |   |-- FoodModel.js
-|   |   |   |-- OrderModel.js
-|   |   |   +-- UserModel.js
+|   |   |   |-- FoodModel.js         (Food schema + CRUD class)
+|   |   |   |-- OrderModel.js        (Order schema + CRUD class)
+|   |   |   +-- UserModel.js         (User schema + CRUD class)
 |   |   |-- routes/
 |   |   |   |-- CartRoute.js
 |   |   |   |-- FoodRoute.js
 |   |   |   |-- OrderRoute.js
 |   |   |   +-- UserRoute.js
 |   |   +-- services/
-|   |       |-- CartService.js
-|   |       |-- EmailService.js
-|   |       |-- FoodService.js
-|   |       |-- OrderService.js
-|   |       |-- StripeService.js
-|   |       +-- UserService.js
-|   +-- uploads/                  (Food images)
+|   |       |-- CartService.js       (Cart business logic)
+|   |       |-- EmailService.js      (Nodemailer email sending)
+|   |       |-- FoodService.js       (Food business logic)
+|   |       |-- OrderService.js      (Order + Stripe business logic)
+|   |       |-- StripeService.js     (Stripe session creation)
+|   |       +-- UserService.js       (Auth + profile business logic)
+|   +-- uploads/                     (Food item images - served statically)
 |-- frontend/
 |   |-- package.json
 |   |-- vite.config.mjs
 |   |-- adapters/
-|   |   +-- RepositoryAdapter.js  (Adapter pattern)
+|   |   +-- RepositoryAdapter.js     (Adapter pattern - swappable data source)
 |   |-- src/
-|   |   |-- App.jsx               (Router + AnimatePresence)
+|   |   |-- App.jsx                  (Router + AnimatePresence wrapper)
 |   |   |-- context/
-|   |   |   +-- StoreContext.jsx   (Global state)
+|   |   |   +-- StoreContext.jsx     (Global state - food list, cart, token)
 |   |   |-- services/
-|   |   |   +-- authService.js    (Firebase auth)
+|   |   |   +-- authService.js       (Firebase OAuth + backend JWT sync)
 |   |   |-- firebase/
-|   |   |-- components/           (14 components)
-|   |   +-- pages/                (7 pages)
+|   |   |   +-- firebaseConfig.js    (Firebase app initialisation)
+|   |   |-- components/              (14 reusable UI components)
+|   |   +-- pages/                   (7 page-level components)
 +-- admin/
     |-- package.json
     |-- vite.config.js
     +-- src/
-        |-- App.jsx               (Composition root + DI)
+        |-- App.jsx                  (Composition root + dependency injection)
         |-- services/
-        |   +-- ApiService.js     (Singleton HTTP client)
+        |   +-- ApiService.js        (Singleton Axios client with interceptors)
         |-- repositories/
-        |   |-- FoodRepository.js
-        |   +-- OrderRepository.js
+        |   |-- FoodRepository.js    (Food data access abstraction)
+        |   +-- OrderRepository.js   (Order data access abstraction)
         |-- models/
-        |   +-- index.js          (Order, FoodItem, DashboardStats, etc.)
+        |   +-- index.js             (Order, FoodItem, Address, DashboardStats classes)
         |-- strategies/
-        |   +-- OrderFilterStrategy.js (Strategy pattern)
+        |   +-- OrderFilterStrategy.js  (Strategy pattern for time-period filtering)
         |-- factories/
-        |   +-- FoodFormFactory.js (Factory pattern)
+        |   +-- FoodFormFactory.js   (Factory for food form data objects)
         |-- events/
-        |   +-- EventBus.js       (Observer pattern)
-        |-- components/
-        +-- pages/"""
+        |   +-- EventBus.js          (Singleton pub/sub event bus)
+        |-- components/              (Navbar, Sidebar)
+        +-- pages/                   (Dashboard, Add, List, Orders)"""
     for line in structure.split("\n"):
         pdf.cell(0, 4, line, new_x="LMARGIN", new_y="NEXT")
     pdf.ln(4)
 
-    # ════════════════════════════════════════════════════════════
-    # 14. KEY FEATURES SUMMARY
-    # ════════════════════════════════════════════════════════════
-    pdf.add_page()
-    pdf.section_title("14", "Key Features Summary")
-
-    pdf.sub_title("Customer Features")
-    pdf.bullet("Browse food items by category with animated transitions")
-    pdf.bullet("Full-text search on food name, description, and category")
-    pdf.bullet("Shopping cart with real-time quantity management (synced with backend)")
-    pdf.bullet("Secure checkout via Stripe payment gateway ($2 delivery fee)")
-    pdf.bullet("Order history with real-time status tracking")
-    pdf.bullet("User registration / login with JWT authentication")
-    pdf.bullet("Social login via Google and Facebook (Firebase)")
-    pdf.bullet("Responsive design with smooth Framer Motion page transitions")
-    pdf.bullet("Back-to-top button and automatic scroll-to-top on navigation")
-    pdf.bullet("Toast notifications for all user actions")
-
-    pdf.ln(3)
-    pdf.sub_title("Admin Features")
-    pdf.bullet("Dashboard with analytics: total orders, revenue, status breakdown")
-    pdf.bullet("Order filtering by time period (Today, Week, Month, Year, All Time)")
-    pdf.bullet("Add new food items with image upload")
-    pdf.bullet("View and remove food items")
-    pdf.bullet("Update order statuses (Food Processing / Out for Delivery / Delivered)")
-    pdf.bullet("Email notifications sent to customers on status change")
-
-    pdf.ln(3)
-    pdf.sub_title("Technical Features")
-    pdf.bullet("Full OOP architecture with ES6 classes throughout all layers")
-    pdf.bullet("10+ design patterns: Singleton, Repository, Strategy, Factory, Observer, Adapter, DI, MVC, Context")
-    pdf.bullet("API rate limiting (100 req / 15 min)")
-    pdf.bullet("JWT-based authentication with 7-day expiry")
-    pdf.bullet("Password hashing with bcryptjs")
-    pdf.bullet("Mongoose ODM with schema validation and text indexing")
-    pdf.bullet("Multer file upload middleware for food images")
-    pdf.bullet("Environment-based configuration via dotenv")
-    pdf.bullet("10 frontend unit tests with Vitest + Testing Library")
-    pdf.bullet("Modular codebase with clear separation of concerns")
-
-    # ════════════════════════════════════════════════════════════
-    # 15. DEPLOYMENT & CONFIGURATION
-    # ════════════════════════════════════════════════════════════
-    pdf.section_title("15", "Deployment & Configuration")
-
-    pdf.sub_title("15.1 Environment Variables")
+    pdf.set_font("Helvetica", "B", 12)
+    pdf.set_text_color(*ReportPDF.DARK)
+    pdf.cell(0, 8, "Design Patterns Summary", new_x="LMARGIN", new_y="NEXT")
+    pdf.ln(1)
     pdf.table(
-        ["Variable", "Description", "Example"],
+        ["Pattern", "Where Applied", "Purpose"],
         [
-            ["MONGODB_URI", "MongoDB connection string", "mongodb://localhost:27017/food-delivery"],
-            ["JWT_SECRET", "Secret key for JWT signing", "(random secure string)"],
-            ["STRIPE_SECRET_KEY", "Stripe API secret key", "sk_test_..."],
-            ["PORT", "Backend server port", "4000"],
-            ["FRONTEND_URL", "Frontend URL for Stripe redirects", "http://localhost:5173"],
-            ["VITE_API_URL", "Backend URL for frontends", "http://localhost:4000"],
-            ["EMAIL_USER", "SMTP email address", "your@gmail.com"],
-            ["EMAIL_PASSWORD", "SMTP email password / app password", "(app password)"],
-            ["SMTP_HOST", "SMTP server host", "smtp.gmail.com"],
-            ["SMTP_PORT", "SMTP server port", "587"],
+            ["Singleton", "Backend models, services, DB config; Admin ApiService, EventBus",
+             "Single shared instance across the application"],
+            ["Repository", "Admin FoodRepository, OrderRepository",
+             "Abstracts HTTP calls; components never touch raw Axios"],
+            ["Strategy", "Admin OrderFilterStrategy",
+             "Swappable time-period filters; Open/Closed Principle"],
+            ["Factory", "Admin FoodFormFactory",
+             "Centralised, immutable creation of form data objects"],
+            ["Observer", "Admin EventBus",
+             "Decoupled pub/sub communication between components"],
+            ["Adapter", "Frontend RepositoryAdapter",
+             "IRepository interface with interchangeable implementations"],
+            ["Dependency Injection", "Admin App.jsx ServiceContext",
+             "Services injected via React Context; no direct imports"],
+            ["MVC / Layered", "Backend Routes-Controllers-Services-Models",
+             "Single responsibility per layer; no cross-layer leakage"],
+            ["Context", "Frontend StoreContext",
+             "Global state without prop drilling"],
         ],
-        [45, 70, 75],
+        [30, 65, 95],
     )
 
-    pdf.sub_title("15.2 Running the Project")
+    # ════════════════════════════════════════════════════════════
+    # 9. GITHUB DEVELOPMENT TIMELINE
+    # ════════════════════════════════════════════════════════════
+    pdf.add_page()
+    pdf.section_title("9", "GitHub Development Timeline")
+    pdf.body_text(
+        "The project was developed iteratively on GitHub, with each commit representing a "
+        "logical unit of work. The following timeline summarises the key development milestones "
+        "in chronological order."
+    )
+
+    pdf.sub_title("9.1 Commit History")
+    pdf.table(
+        ["Date", "Commit", "Description"],
+        [
+            ["2026-03-08", "ce3df88", "Initial plan - project scaffolding and architecture outline"],
+            ["2026-03-09", "c10cfd0", "Core implementation - MERN stack modules, OOP classes, and tests"],
+        ],
+        [30, 25, 135],
+    )
+
+    pdf.ln(3)
+    pdf.sub_title("9.2 Development Phases")
+    pdf.table(
+        ["Phase", "Activities"],
+        [
+            ["Phase 1 - Planning",
+             "Defined project scope, chose MERN stack, designed OOP class hierarchy, "
+             "identified design patterns, created repository and initial plan commit."],
+            ["Phase 2 - Backend Development",
+             "Implemented Express server, MongoDB models (User, Food, Order), "
+             "controllers, services, middleware (JWT auth, Multer upload), "
+             "and all REST API endpoints."],
+            ["Phase 3 - Frontend Development",
+             "Built React customer SPA with pages (Home, Menu, Cart, Place Order, "
+             "My Orders, Verify), StoreContext state management, and Firebase social login."],
+            ["Phase 4 - Admin Panel",
+             "Developed React admin dashboard with OOP patterns: Singleton ApiService, "
+             "Repository layer, Strategy filters, Factory form builder, Observer EventBus, "
+             "and rich domain models."],
+            ["Phase 5 - Integration & Testing",
+             "Connected frontend to backend API, integrated Stripe payments and "
+             "Nodemailer emails, wrote 10 Vitest component unit tests."],
+            ["Phase 6 - Refinement",
+             "Added animations (Framer Motion), toast notifications, back-to-top "
+             "button, 404 page, code review, and this report generator."],
+        ],
+        [35, 155],
+    )
+
+    # ════════════════════════════════════════════════════════════
+    # 10. TESTING
+    # ════════════════════════════════════════════════════════════
+    pdf.add_page()
+    pdf.section_title("10", "Testing")
+
+    pdf.sub_title("10.1 Testing Strategy")
+    pdf.body_text(
+        "The project follows a component-level unit testing strategy for the customer frontend "
+        "using Vitest as the test runner, @testing-library/react for rendering and interacting "
+        "with components, @testing-library/jest-dom for extended DOM matchers, and JSDOM as "
+        "the simulated browser environment. Tests focus on verifying that components render "
+        "correctly and respond to user interactions as expected."
+    )
+
+    pdf.sub_title("10.2 Testing Frameworks and Tools")
+    pdf.table(
+        ["Tool", "Version", "Role"],
+        [
+            ["Vitest", "4.0 (frontend) / 0.34 (admin)", "Test runner and assertion library"],
+            ["@testing-library/react", "16.3 (frontend) / 14.0 (admin)", "Component rendering and querying"],
+            ["@testing-library/jest-dom", "Latest", "Custom DOM matchers (toBeInTheDocument, etc.)"],
+            ["@testing-library/user-event", "Latest", "Simulated user interactions (click, type)"],
+            ["JSDOM", "Built-in", "Headless browser environment for tests"],
+            ["@babel/core + preset-react", "7.28", "JSX transformation for test environment"],
+        ],
+        [55, 50, 85],
+    )
+
+    pdf.sub_title("10.3 Frontend Test Coverage")
+    pdf.table(
+        ["Test File", "Component", "What Is Tested"],
+        [
+            ["App.test.jsx", "App", "Renders without crashing; routing setup"],
+            ["Navbar.test.jsx", "Navbar", "Navigation links; cart badge visibility"],
+            ["header.test.jsx", "Header", "Hero section renders with CTA button"],
+            ["explore-menu.test.jsx", "ExploreMenu", "Category items render; selection callback"],
+            ["FoodDisply.test.jsx", "FoodDisplay", "Food grid renders items from context"],
+            ["FoodItem.test.jsx", "FoodItem", "Food card displays name/price; add-to-cart"],
+            ["login.test.jsx", "Login", "Modal opens; form fields; submit trigger"],
+            ["footer.test.jsx", "Footer", "Footer links and text render correctly"],
+            ["AppDownload.test.jsx", "AppDownload", "Download section renders store badges"],
+            ["verify.test.jsx", "Verify", "Payment verification page renders correctly"],
+        ],
+        [50, 32, 108],
+    )
+
+    pdf.sub_title("10.4 Running Tests")
     pdf.set_font("Courier", "", 9)
-    commands = [
-        "# Backend",
-        "cd backend && npm install && npm run dev",
+    test_commands = [
+        "# Run all frontend tests",
+        "cd frontend && npm test",
         "",
-        "# Customer Frontend",
-        "cd frontend && npm install && npm run dev",
+        "# Run tests with interactive UI",
+        "cd frontend && npm run test:ui",
         "",
-        "# Admin Panel",
-        "cd admin && npm install && npm run dev",
+        "# Run all admin tests",
+        "cd admin && npm test",
     ]
-    for cmd in commands:
+    for cmd in test_commands:
         pdf.cell(0, 5, cmd, new_x="LMARGIN", new_y="NEXT")
     pdf.ln(3)
 
     pdf.set_font("Helvetica", "", 10)
+    pdf.set_text_color(*ReportPDF.DARK)
+    pdf.sub_title("10.5 Admin Panel Testing Readiness")
     pdf.body_text(
-        "The backend runs on port 4000 by default. The frontend and admin panel use Vite's "
-        "dev server (typically ports 5173 and 5174). In production, the React apps are built "
-        "with `npm run build` and served as static files."
+        "The admin panel has Vitest and @testing-library/react installed and configured in its "
+        "package.json scripts (test, test:ui). The modular OOP architecture (Repository, "
+        "Strategy, Factory, domain models) is highly testable in isolation, making it "
+        "straightforward to add comprehensive unit tests for each class."
     )
 
-    # ── Save ────────────────────────────────────────────────────
-    output_path = r"c:\Users\zisam\Desktop\Hisham\Food-Del_upadated\Food_Delivery_Project_Report.pdf"
+    # ════════════════════════════════════════════════════════════
+    # 11. FUTURE IMPROVEMENTS
+    # ════════════════════════════════════════════════════════════
+    pdf.add_page()
+    pdf.section_title("11", "Future Improvements")
+
+    pdf.sub_title("11.1 Feature Enhancements")
+    pdf.bullet("Real-time order tracking map - Integrate Google Maps or Mapbox to display "
+               "a live delivery map on the My Orders page.")
+    pdf.bullet("Push notifications - Use Web Push API or a service like Firebase Cloud Messaging "
+               "to notify customers of order status changes without requiring email.")
+    pdf.bullet("Restaurant / multi-vendor support - Allow multiple restaurants to register and "
+               "manage their own menus, enabling a true marketplace model.")
+    pdf.bullet("Food ratings and reviews - Allow customers to rate ordered items and leave "
+               "text reviews visible to other users.")
+    pdf.bullet("Discount codes and promotions - Implement a coupon system with percentage or "
+               "fixed-amount discounts redeemable at checkout.")
+    pdf.bullet("Scheduled orders - Allow customers to place orders in advance for a specified "
+               "delivery time.")
+    pdf.bullet("Loyalty points system - Award points per order that can be redeemed for discounts.")
+
+    pdf.ln(3)
+    pdf.sub_title("11.2 Technical Improvements")
+    pdf.bullet("End-to-end testing - Add Playwright or Cypress tests to cover full user journeys "
+               "(register, browse, order, verify payment) across the entire stack.")
+    pdf.bullet("Backend unit and integration tests - Add Jest tests for all Service and "
+               "Controller classes, and integration tests against a test MongoDB instance.")
+    pdf.bullet("GraphQL API - Provide a GraphQL layer alongside the REST API for more "
+               "flexible client-driven queries and reduced over-fetching.")
+    pdf.bullet("WebSocket real-time updates - Use Socket.io so that the admin dashboard and "
+               "My Orders page update order statuses without polling.")
+    pdf.bullet("Containerisation - Add Docker Compose configuration to run MongoDB, backend, "
+               "frontend, and admin panel as isolated containers for reproducible development "
+               "and production environments.")
+    pdf.bullet("CI/CD pipeline - Configure GitHub Actions to run linting, unit tests, and "
+               "automated deployment on every push to the main branch.")
+    pdf.bullet("TypeScript migration - Convert the codebase to TypeScript for compile-time "
+               "type safety, better IDE support, and reduced runtime errors.")
+
+    pdf.ln(3)
+    pdf.sub_title("11.3 Security and Performance Improvements")
+    pdf.bullet("HTTPS enforcement - Deploy backend behind an NGINX reverse proxy with "
+               "Let's Encrypt TLS certificates.")
+    pdf.bullet("Refresh token rotation - Replace long-lived JWTs with short-lived access "
+               "tokens and refresh token rotation for better session security.")
+    pdf.bullet("Input sanitisation - Add express-validator middleware to all routes for "
+               "server-side input sanitisation and detailed validation error messages.")
+    pdf.bullet("Image CDN - Serve food images via a CDN (Cloudinary or AWS S3 + CloudFront) "
+               "instead of local disk storage for better performance and scalability.")
+    pdf.bullet("Caching - Introduce Redis caching for frequently read data (food list, "
+               "categories) to reduce database load.")
+    pdf.bullet("Database pagination - Add cursor-based or offset pagination to all list "
+               "endpoints to support large datasets efficiently.")
+    pdf.bullet("Accessibility audit - Conduct WCAG 2.1 accessibility review and fix "
+               "keyboard navigation and screen reader support throughout the React apps.")
+
+    # ── Save ─────────────────────────────────────────────────────
+    output_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                               "Food_Delivery_Project_Report.pdf")
     pdf.output(output_path)
     print(f"Report generated: {output_path}")
 
