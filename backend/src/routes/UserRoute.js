@@ -14,6 +14,7 @@ class UserRoute {
     this.router.post("/register", this.controller.register);
     this.router.post("/login", this.controller.login);
     this.router.get("/profile", this.authMiddleware.authenticate, this.controller.getUserProfile);
+    this.router.put("/profile", this.authMiddleware.authenticate, this.controller.updateProfile);
   }
 
   getRouter() {

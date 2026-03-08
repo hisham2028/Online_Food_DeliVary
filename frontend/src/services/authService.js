@@ -9,7 +9,7 @@ import axios from 'axios';
 
 class AuthService {
   constructor() {
-    this.url = "http://localhost:4002";
+    this.url = import.meta.env.VITE_API_URL || "http://localhost:4000";
   }
 
   // Google Sign In
