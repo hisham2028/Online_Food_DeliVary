@@ -1,7 +1,7 @@
 import { createContext, useState, useEffect, useMemo, useContext } from "react";
 import axios from "axios";
 
-const StoreContext = createContext(null);
+export const StoreContext = createContext(null);
 
 export const useStore = () => useContext(StoreContext);
 
@@ -11,19 +11,15 @@ const StoreContextProvider = ({ children }) => {
   const [token, setToken] = useState("");
   const [food_list, setFoodlist] = useState([]); // always array
   const [cartItems, setCartItems] = useState({}); // always object
-  const [loading, setLoading] = useState(true);
 
   // ================= FETCH FOOD LIST =================
   const fetchFoodlist = async () => {
     try {
-      setLoading(true);
       const response = await axios.get(`${url}/api/food/list`);
       setFoodlist(response.data?.data || []);
     } catch (error) {
       console.error("Error fetching food list:", error);
       setFoodlist([]);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -135,9 +131,8 @@ const StoreContextProvider = ({ children }) => {
       url,
       token,
       setToken,
-      loading,
     }),
-    [food_list, cartItems, token, loading]
+    [food_list, cartItems, token]
   );
 
   return (
