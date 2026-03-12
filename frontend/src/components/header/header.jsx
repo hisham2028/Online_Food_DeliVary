@@ -19,7 +19,7 @@ const Header = () => {
         <div
           key={index}
           className={`header-bg ${index === currentIndex ? 'active' : ''}`}
-          style={{ backgroundImage: `url(${img})` }}
+          style={{ backgroundImage: `url(/${img})` }}
         />
       ))}
       <div className="header-overlay"></div>

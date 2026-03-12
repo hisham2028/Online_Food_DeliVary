@@ -20,11 +20,28 @@ const Navbar = ({ setShowLogin }) => {
   // Scroll effect for sticky navbar
   useEffect(() => {
     const handleScroll = () => {
-      window.scrollY > 50 ? setSticky(true) : setSticky(false);
+      // Disable sticky on mobile/tablet and menu page
+      const isMobile = window.innerWidth <= 992;
+      const isMenuPage = location.pathname === '/menu';
+      
+      if (!isMobile && !isMenuPage) {
+        window.scrollY > 50 ? setSticky(true) : setSticky(false);
+      } else {
+        setSticky(false);
+      }
     };
+    
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    window.addEventListener('resize', handleScroll);
+    
+    // Initial check
+    handleScroll();
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+    };
+  }, [location.pathname]);
 
   const handleSearch = (e) => {
     e.preventDefault();

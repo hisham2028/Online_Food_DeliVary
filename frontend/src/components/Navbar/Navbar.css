@@ -36,7 +36,7 @@
   border-radius: 0; /* Flat edges at the top */
 }
 
-/* Sticky State - Glossy Glass with High Contrast Text */
+/* Sticky State - Solid White Background */
 .navbar.sticky {
   top: 20px;
   width: 90%;
@@ -44,17 +44,13 @@
   padding: 10px 40px;
   border-radius: 50px;
   
-  /* Glossy Background */
-  background: linear-gradient(
-    135deg, 
-    rgba(255, 255, 255, 0.25), 
-    rgba(255, 255, 255, 0.1)
-  );
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
+  /* Solid White Background */
+  background: #ffffff;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   
-  /* Glass Border & Shadow */
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  /* Solid Border & Shadow */
+  border: 2px solid #e5e7eb;
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
   
   transition: all 0.3s ease-in-out;
@@ -310,6 +306,34 @@
 
 /* Responsive Styles */
 @media (max-width: 992px) {
+  /* Disable sticky behavior in responsive view */
+  .navbar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    padding: 12px 4% !important;
+    border-radius: 0 !important;
+    background: white !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: none !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+  }
+  
+  .navbar.sticky {
+    top: 0 !important;
+    width: 100% !important;
+    left: 0 !important;
+    padding: 12px 4% !important;
+    border-radius: 0 !important;
+    background: white !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: none !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+  }
+
   .navbar-menu {
     position: fixed;
     top: 0;
@@ -378,4 +402,20 @@
     border-radius: 5px;
     top: -8px;
     right: -8px;
+}
+
+/* Menu page specific - disable sticky navbar */
+.menu-page .navbar,
+.menu-page .navbar.sticky {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  padding: 10px 3% !important;
+  border-radius: 0 !important;
+  background: white !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: none !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
 }
