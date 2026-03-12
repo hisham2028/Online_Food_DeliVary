@@ -14,4 +14,4 @@ export const assets ={
     parcel_icon
 }
 
-export const url = "https://fooddelivary-backend-mfpc.onrender.com"
+export const url = "https://online-food-delivary-backend2.onrender.com"
