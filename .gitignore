@@ -3,6 +3,9 @@
 /.pnp
 .pnp.js
 
+# Generated report output (build artifact)
+Food_Delivery_Project_Report.pdf
+
 # Testing
 /coverage
 
