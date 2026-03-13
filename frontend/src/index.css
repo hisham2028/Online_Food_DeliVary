@@ -82,7 +82,7 @@
 }
 
 body {
-  background: var(--gradient-warm);
+  background: #fef3c7;
   color: var(--text-primary);
   min-height: 100vh;
   /* ✅ REMOVED: background-attachment: fixed — causes layout distortion on deployed/mobile environments */
