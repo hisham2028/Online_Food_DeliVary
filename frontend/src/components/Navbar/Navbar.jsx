@@ -9,7 +9,6 @@ const Navbar = ({ setShowLogin }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [sticky, setSticky] = useState(false);
   
-  // Search State
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -17,10 +16,12 @@ const Navbar = ({ setShowLogin }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Scroll effect for sticky navbar
   useEffect(() => {
+    // Reset sticky state on every route change
+    setSticky(false);
+    window.scrollTo(0, 0);
+
     const handleScroll = () => {
-      // Disable sticky on mobile/tablet and menu page
       const isMobile = window.innerWidth <= 992;
       const isMenuPage = location.pathname === '/menu';
       
@@ -34,12 +35,13 @@ const Navbar = ({ setShowLogin }) => {
     window.addEventListener('scroll', handleScroll);
     window.addEventListener('resize', handleScroll);
     
-    // Initial check
-    handleScroll();
+    // Delay initial check so page has time to scroll to top first
+    const timer = setTimeout(handleScroll, 100);
     
     return () => {
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', handleScroll);
+      clearTimeout(timer);
     };
   }, [location.pathname]);
 
@@ -95,7 +97,6 @@ const Navbar = ({ setShowLogin }) => {
       </ul>
       
       <div className='navbar-right'>
-        {/* Search Container */}
         <div className={`navbar-search-container ${showSearch ? 'active' : ''}`}>
           <form onSubmit={handleSearch}>
             <input 
@@ -114,16 +115,13 @@ const Navbar = ({ setShowLogin }) => {
           />
         </div>
 
-        {/* Cart Icon with Dynamic Dot */}
         <div className='navbar-cart-icon'>
           <Link to="/cart" onClick={() => handleMenuItemClick('cart')}>
             <img src={assets.basket_icon} alt="Cart" />
-            {/* Dot only appears if items are in the cart */}
             {getTotalCartAmount() > 0 && <div className="dot"></div>}
           </Link>
         </div>
 
-        {/* User Authentication Logic */}
         {!token ? (
           <button onClick={() => setShowLogin(true)} className="signin-btn">Sign In</button>
         ) : (
@@ -143,7 +141,6 @@ const Navbar = ({ setShowLogin }) => {
           </div>
         )}
 
-        {/* Hamburger menu for mobile */}
         <div className={`mobile-menu-toggle ${isMobileMenuOpen ? 'open' : ''}`} onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
           <span></span>
           <span></span>
