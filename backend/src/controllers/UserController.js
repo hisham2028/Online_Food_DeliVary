@@ -1,6 +1,7 @@
 import UserModel from "../models/UserModel.js";
 import bcrypt from "bcryptjs";
 import validator from "validator";
+import { body } from "express-validator";
 import AuthMiddleware from "../middleware/AuthMiddleware.js";
 
 class UserController {
@@ -28,7 +29,16 @@ class UserController {
       }
 
       const token = this.authMiddleware.generateToken(user._id);
-      res.json({ success: true, token });
+      
+      // Set httpOnly cookie
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+      });
+      
+      res.json({ success: true, message: "Login successful" });
     } catch (error) {
       console.error("LOGIN ERROR:", error);
       res.status(500).json({ success: false, message: "Server Error" });
@@ -66,7 +76,16 @@ class UserController {
       });
 
       const token = this.authMiddleware.generateToken(newUser._id);
-      res.json({ success: true, token });
+      
+      // Set httpOnly cookie
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+      });
+      
+      res.json({ success: true, message: "Registration successful" });
     } catch (error) {
       console.error("REGISTER ERROR:", error);
       res.status(500).json({ success: false, message: "Server Error" });
@@ -84,6 +103,23 @@ class UserController {
       res.json({ success: true, data: userWithoutPassword });
     } catch (error) {
       console.error("GET PROFILE ERROR:", error);
+      res.status(500).json({ success: false, message: "Server Error" });
+    }
+  }
+
+  logout = async (req, res) => {
+    try {
+      // Clear the cookie
+      res.cookie('token', '', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 0 // Immediately expire
+      });
+      
+      res.json({ success: true, message: "Logout successful" });
+    } catch (error) {
+      console.error("LOGOUT ERROR:", error);
       res.status(500).json({ success: false, message: "Server Error" });
     }
   }
