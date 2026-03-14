@@ -6,7 +6,8 @@ class AuthMiddleware {
   }
 
   authenticate = async (req, res, next) => {
-    const { token } = req.headers;
+    // Try to get token from cookie first, then fallback to header for backward compatibility
+    const token = req.cookies?.token || req.headers.token;
 
     if (!token) {
       return res.status(401).json({ success: false, message: "Not Authorized. Login Again." });
