@@ -1,36 +1,39 @@
-import express from "express";
-import rateLimit from "express-rate-limit";
-import UserController from "../controllers/UserController.js";
-import AuthMiddleware from "../middleware/AuthMiddleware.js";
+import jwt from "jsonwebtoken";
 
-class UserRoute {
+class AuthMiddleware {
   constructor() {
-    this.router = express.Router();
-    this.controller = UserController;
-    this.authMiddleware = AuthMiddleware;
-
-    // Stricter rate limit for login/register to prevent brute force
-    this.authLimiter = rateLimit({
-      windowMs: 15 * 60 * 1000, // 15 minutes
-      max: 10, // only 10 attempts per window
-      standardHeaders: true,
-      legacyHeaders: false,
-      message: { success: false, message: "Too many attempts. Please try again in 15 minutes." }
-    });
-
-    this.initializeRoutes();
+    // Remove secretKey capture - read lazily instead
   }
 
-  initializeRoutes() {
-    this.router.post("/register", this.authLimiter, this.controller.register);
-    this.router.post("/login", this.authLimiter, this.controller.login);
-    this.router.get("/profile", this.authMiddleware.authenticate, this.controller.getUserProfile);
-    this.router.put("/profile", this.authMiddleware.authenticate, this.controller.updateProfile);
+  authenticate = async (req, res, next) => {
+    // Try to get token from cookie first, then fallback to header for backward compatibility
+    const token = req.cookies?.token || req.headers.token;
+
+    if (!token) {
+      return res.status(401).json({ success: false, message: "Not Authorized. Login Again." });
+    }
+
+    try {
+      const token_decode = jwt.verify(token, process.env.JWT_SECRET);
+      req.body.userId = token_decode.id;
+      next();
+    } catch (error) {
+      console.log(error);
+      res.status(401).json({ success: false, message: "Token expired or invalid. Please login again." });
+    }
   }
 
-  getRouter() {
-    return this.router;
+  generateToken(id) {
+    return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+  }
+
+  verifyToken(token) {
+    try {
+      return jwt.verify(token, process.env.JWT_SECRET);
+    } catch (error) {
+      return null;
+    }
   }
 }
 
-export default new UserRoute().getRouter();
+export default new AuthMiddleware();
