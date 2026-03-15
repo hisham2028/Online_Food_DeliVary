@@ -1,39 +1,29 @@
-import jwt from "jsonwebtoken";
+import express from "express";
+import rateLimit from "express-rate-limit";
+import UserController from "../controllers/UserController.js";
+import AuthMiddleware from "../middleware/AuthMiddleware.js";
 
-class AuthMiddleware {
+class UserRoute {
   constructor() {
-    // Remove secretKey capture - read lazily instead
+    this.router = express.Router();
+    this.controller = UserController;
+    this.authMiddleware = AuthMiddleware;
+
+    // Removed login/register rate limiter
+
+    this.initializeRoutes();
   }
 
-  authenticate = async (req, res, next) => {
-    // Try to get token from cookie first, then fallback to header for backward compatibility
-    const token = req.cookies?.token || req.headers.token;
-
-    if (!token) {
-      return res.status(401).json({ success: false, message: "Not Authorized. Login Again." });
-    }
-
-    try {
-      const token_decode = jwt.verify(token, process.env.JWT_SECRET);
-      req.body.userId = token_decode.id;
-      next();
-    } catch (error) {
-      console.log(error);
-      res.status(401).json({ success: false, message: "Token expired or invalid. Please login again." });
-    }
+  initializeRoutes() {
+    this.router.post("/register", this.controller.register);
+    this.router.post("/login", this.controller.login);
+    this.router.get("/profile", this.authMiddleware.authenticate, this.controller.getUserProfile);
+    this.router.put("/profile", this.authMiddleware.authenticate, this.controller.updateProfile);
   }
 
-  generateToken(id) {
-    return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" });
-  }
-
-  verifyToken(token) {
-    try {
-      return jwt.verify(token, process.env.JWT_SECRET);
-    } catch (error) {
-      return null;
-    }
+  getRouter() {
+    return this.router;
   }
 }
 
-export default new AuthMiddleware();
+export default new UserRoute().getRouter();
