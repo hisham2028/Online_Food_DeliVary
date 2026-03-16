@@ -7,6 +7,9 @@ class UserModel {
       email: { type: String, required: true, unique: true },
       password: { type: String, required: true },
       cartData: { type: Object, default: {} },
+      isVerified: { type: Boolean, default: false },           // ✅ new
+      verificationToken: { type: String },                     // ✅ new
+      verificationTokenExpire: { type: Date },                 // ✅ new
       resetPasswordToken: { type: String },
       resetPasswordExpire: { type: Date }
     }, { 
@@ -28,6 +31,13 @@ class UserModel {
 
   async findByEmail(email) {
     return await this.model.findOne({ email });
+  }
+
+  async findByVerificationToken(token) {
+    return await this.model.findOne({
+      verificationToken: token,
+      verificationTokenExpire: { $gt: Date.now() }
+    });
   }
 
   async updateById(id, updateData) {

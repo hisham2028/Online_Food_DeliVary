@@ -1,7 +1,9 @@
 import UserModel from "../models/UserModel.js";
 import bcrypt from "bcryptjs";
 import validator from "validator";
+import crypto from "crypto";
 import AuthMiddleware from "../middleware/AuthMiddleware.js";
+import EmailService from "../services/EmailService.js";
 
 class UserController {
   constructor() {
@@ -20,6 +22,14 @@ class UserController {
       const user = await this.userModel.findByEmail(email);
       if (!user) {
         return res.status(401).json({ success: false, message: "User does not exist" });
+      }
+
+      // ✅ Block login if not verified
+      if (!user.isVerified) {
+        return res.status(401).json({ 
+          success: false, 
+          message: "Please verify your email before logging in. Check your inbox." 
+        });
       }
 
       const isMatch = await bcrypt.compare(password, user.password);
@@ -59,16 +69,84 @@ class UserController {
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, salt);
 
-      const newUser = await this.userModel.create({
+      // ✅ Generate verification token
+      const verificationToken = crypto.randomBytes(32).toString('hex');
+      const verificationTokenExpire = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+
+      await this.userModel.create({
         name,
         email,
         password: hashedPassword,
+        isVerified: false,
+        verificationToken,
+        verificationTokenExpire
       });
 
-      const token = this.authMiddleware.generateToken(newUser._id);
-      res.json({ success: true, token });
+      // ✅ Send verification email
+      await EmailService.sendVerificationEmail(email, verificationToken);
+
+      res.json({ 
+        success: true, 
+        message: "Registration successful! Please check your email to verify your account." 
+      });
     } catch (error) {
       console.error("REGISTER ERROR:", error);
+      res.status(500).json({ success: false, message: "Server Error" });
+    }
+  }
+
+  // ✅ New — verify email endpoint
+  verifyEmail = async (req, res) => {
+    try {
+      const { token } = req.params;
+
+      const user = await this.userModel.findByVerificationToken(token);
+      if (!user) {
+        return res.status(400).send(`
+          <html><body style="font-family:Arial;text-align:center;padding:50px">
+            <h2 style="color:red">Invalid or expired verification link.</h2>
+            <p>Please register again.</p>
+          </body></html>
+        `);
+      }
+
+      await this.userModel.updateById(user._id, {
+        isVerified: true,
+        verificationToken: null,
+        verificationTokenExpire: null
+      });
+
+      // ✅ Redirect to frontend login page after verification
+      res.redirect(`${process.env.FRONTEND_URL}/login?verified=true`);
+    } catch (error) {
+      console.error("VERIFY EMAIL ERROR:", error);
+      res.status(500).send('<h2>Server error. Please try again.</h2>');
+    }
+  }
+
+  // ✅ New — resend verification email
+  resendVerification = async (req, res) => {
+    try {
+      const { email } = req.body;
+      const user = await this.userModel.findByEmail(email);
+
+      if (!user) {
+        return res.status(404).json({ success: false, message: "User not found" });
+      }
+
+      if (user.isVerified) {
+        return res.json({ success: false, message: "Email already verified" });
+      }
+
+      const verificationToken = crypto.randomBytes(32).toString('hex');
+      const verificationTokenExpire = Date.now() + 24 * 60 * 60 * 1000;
+
+      await this.userModel.updateById(user._id, { verificationToken, verificationTokenExpire });
+      await EmailService.sendVerificationEmail(email, verificationToken);
+
+      res.json({ success: true, message: "Verification email resent. Please check your inbox." });
+    } catch (error) {
+      console.error("RESEND VERIFICATION ERROR:", error);
       res.status(500).json({ success: false, message: "Server Error" });
     }
   }
@@ -79,7 +157,6 @@ class UserController {
       if (!user) {
         return res.json({ success: false, message: "User not found" });
       }
-      
       const { password, ...userWithoutPassword } = user.toObject();
       res.json({ success: true, data: userWithoutPassword });
     } catch (error) {
@@ -91,16 +168,13 @@ class UserController {
   updateProfile = async (req, res) => {
     try {
       const { name } = req.body;
-
       if (!name || !name.trim()) {
         return res.status(400).json({ success: false, message: "Name is required" });
       }
-
       const updatedUser = await this.userModel.updateById(req.body.userId, { name: name.trim() });
       if (!updatedUser) {
         return res.status(404).json({ success: false, message: "User not found" });
       }
-
       const { password, ...userWithoutPassword } = updatedUser.toObject();
       res.json({ success: true, message: "Profile updated successfully", data: userWithoutPassword });
     } catch (error) {
