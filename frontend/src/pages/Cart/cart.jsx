@@ -4,23 +4,16 @@ import { useStore } from '../../context/StoreContext';
 import { useNavigate } from 'react-router-dom';
 
 const Cart = () => {
-  const { 
-    cartItems, 
-    food_list, 
-    removeFromCart, 
-    getTotalCartAmount,
-    url 
-  } = useStore();
-  
+  const { cartItems, food_list, removeFromCart, getTotalCartAmount } = useStore();
   const navigate = useNavigate();
 
   const removeItemCompletely = (itemId) => {
     removeFromCart(itemId, true);
   };
 
-  const subtotal = getTotalCartAmount();
+  const subtotal    = getTotalCartAmount();
   const deliveryFee = subtotal === 0 ? 0 : 2; 
-  const total = subtotal + deliveryFee;
+  const total       = subtotal + deliveryFee;
 
   return (
     <div className='cart'>
@@ -35,13 +28,13 @@ const Cart = () => {
         </div>
         <br />
         <hr />
-        {food_list.map((item, index) => {
+        {food_list.map((item) => {
           if (cartItems[item._id] > 0) {
             return (
               <div key={item._id}>
                 <div className='cart-items-title cart-items-item'>
-                  {/* 3. Updated image path to use backend URL */}
-                  <img src={url + "/images/" + item.image} alt="" />
+                  {/* ✅ image is now a full Cloudinary URL */}
+                  <img src={item.image} alt={item.name} />
                   <p>{item.name}</p>
                   <p>${item.price}</p>
                   <p>{cartItems[item._id]}</p>
@@ -60,20 +53,11 @@ const Cart = () => {
         <div className="cart-total">
           <h2>Cart Totals</h2>
           <div>
-            <div className="cart-total-details">
-              <p>Subtotal</p>
-              <p>${subtotal}</p>
-            </div>
+            <div className="cart-total-details"><p>Subtotal</p><p>${subtotal}</p></div>
             <hr />
-            <div className="cart-total-details">
-              <p>Delivery Fee</p>
-              <p>${subtotal === 0 ? 0 : deliveryFee}</p>
-            </div>
+            <div className="cart-total-details"><p>Delivery Fee</p><p>${subtotal === 0 ? 0 : deliveryFee}</p></div>
             <hr />
-            <div className="cart-total-details">
-              <b>Total</b>
-              <b>${subtotal === 0 ? 0 : total}</b>
-            </div>
+            <div className="cart-total-details"><b>Total</b><b>${subtotal === 0 ? 0 : total}</b></div>
           </div>
           <button onClick={() => navigate('/order')}>PROCEED TO CHECKOUT</button>
         </div>

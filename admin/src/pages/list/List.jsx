@@ -1,13 +1,3 @@
-/**
- * List — Page Component
- *
- * Patterns:
- *   Repository      – foodRepo abstracts all CRUD
- *   Model           – raw API data mapped to FoodItem objects
- *   Observer        – subscribes to FOOD_ADDED to auto-refresh
- *   Dependency Inj. – services from useServices()
- *   Sub-components  – FoodRow, EmptyState, LoadingState
- */
 import React, { useEffect, useState, useCallback } from 'react';
 import './list.css';
 import { toast } from 'react-toastify';
@@ -16,13 +6,10 @@ import { FoodItem } from '../../models';
 import EventBus, { EVENTS } from '../../events/EventBus';
 
 // ─── FoodRow ───────────────────────────────────────────────────────────────────
-const FoodRow = ({ item, imageBaseUrl, onRemove }) => (
+const FoodRow = ({ item, onRemove }) => (
   <div className="list-table-format">
-    <img
-      src={`${imageBaseUrl}/images/${item.image}`}
-      alt={item.name}
-      loading="lazy"
-    />
+    {/* ✅ image is now a full Cloudinary URL — no base URL needed */}
+    <img src={item.image} alt={item.name} loading="lazy" />
     <p>{item.name}</p>
     <p>{item.category}</p>
     <p>{item.formattedPrice}</p>
@@ -42,7 +29,7 @@ const LoadingState = () => <p className="state-msg">Loading…</p>;
 
 // ─── List ──────────────────────────────────────────────────────────────────────
 const List = () => {
-  const { foodRepo, api } = useServices();
+  const { foodRepo } = useServices();  // ✅ removed unused 'api'
   const [items,     setItems]     = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -62,7 +49,6 @@ const List = () => {
     try {
       const result = await foodRepo.remove(foodId);
       toast.success(result.message ?? 'Item removed.');
-      // Optimistic UI: remove immediately without a re-fetch
       setItems((prev) => prev.filter((i) => i._id !== foodId));
       EventBus.emit(EVENTS.FOOD_REMOVED, { foodId });
     } catch (err) {
@@ -72,7 +58,6 @@ const List = () => {
 
   useEffect(() => { fetchItems(); }, [fetchItems]);
 
-  // Observer: re-fetch when the Add page successfully adds a new item
   useEffect(() => {
     const unsub = EventBus.on(EVENTS.FOOD_ADDED, fetchItems);
     return unsub;
@@ -89,14 +74,12 @@ const List = () => {
           <b>Price</b>
           <b>Action</b>
         </div>
-
         {isLoading && <LoadingState />}
         {!isLoading && items.length === 0 && <EmptyState />}
         {!isLoading && items.map((item) => (
           <FoodRow
             key={item._id}
             item={item}
-            imageBaseUrl={api.getBaseUrl()}
             onRemove={handleRemove}
           />
         ))}

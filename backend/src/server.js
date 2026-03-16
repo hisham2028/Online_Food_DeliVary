@@ -19,11 +19,12 @@ class Server {
     
     this.initializeMiddleware();
     this.initializeRoutes();
-    this.initializeStaticFiles();
     this.initializeTestRoute();
+    // ✅ initializeStaticFiles removed — Cloudinary serves images directly
   }
 
   initializeMiddleware() {
+    this.app.set('trust proxy', 1);
     this.app.use(express.json());
     this.app.use(cors());
 
@@ -43,10 +44,6 @@ class Server {
     this.app.use("/api/order", OrderRoute);
   }
 
-  initializeStaticFiles() {
-    this.app.use("/images", express.static('uploads'));
-  }
-
   initializeTestRoute() {
     this.app.get("/", (req, res) => {
       res.send("API Working Successfully");
@@ -56,9 +53,13 @@ class Server {
   async start() {
     try {
       await this.database.connect();
-      
       this.app.listen(this.port, () => {
         console.log(`Server Started on http://localhost:${this.port}`);
+      }).on('error', (err) => {
+        if (err.code === 'EADDRINUSE') {
+          console.error(`Port ${this.port} already in use. Run: npx kill-port ${this.port}`);
+          process.exit(1);
+        }
       });
     } catch (error) {
       console.error("Failed to start server:", error);

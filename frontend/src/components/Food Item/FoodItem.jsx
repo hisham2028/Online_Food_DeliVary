@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import './Fooditem.css';
-import { assets } from '../../assets/assets';
 import { useStore } from '../../context/StoreContext';
 
 function FoodItem({ id, name, price, description, image }) {
-    const { cartItems = {}, addToCart, removeFromCart, url } = useStore();
+    const { cartItems = {}, addToCart, removeFromCart } = useStore();
     const quantity = (cartItems && cartItems[id]) || 0;
 
     return (
         <div className='food-item'>
             <div className='food-item-img-container'>
-                <img className='food-item-image' src={url + "/images/" + image} alt={name} />   
-                    {quantity === 0 ? (
+                {/* ✅ image is now a full Cloudinary URL */}
+                <img className='food-item-image' src={image} alt={name} />   
+                {quantity === 0 ? (
                     <button 
                         className='food-item-add-btn'
                         onClick={(e) => {
