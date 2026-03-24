@@ -9,10 +9,10 @@ const MESSAGES = [
 ];
 
 const PROGRESS_STEPS = [
-  { value: 22,  delay: 0    },
-  { value: 48,  delay: 800  },
-  { value: 76,  delay: 1700 },
-  { value: 100, delay: 2600 },
+  { value: 25,  delay: 0    },
+  { value: 50,  delay: 400  },
+  { value: 75,  delay: 800 },
+  { value: 100, delay: 1200 },
 ];
 
 /* ── Stars ── */
