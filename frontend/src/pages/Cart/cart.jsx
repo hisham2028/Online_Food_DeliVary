@@ -12,7 +12,7 @@ const Cart = () => {
   };
 
   const subtotal    = getTotalCartAmount();
-  const deliveryFee = subtotal === 0 ? 0 : 2; 
+  const deliveryFee = subtotal === 0 ? 0 : 2;
   const total       = subtotal + deliveryFee;
 
   return (
@@ -33,8 +33,14 @@ const Cart = () => {
             return (
               <div key={item._id}>
                 <div className='cart-items-title cart-items-item'>
-                  {/* ✅ image is now a full Cloudinary URL */}
-                  <img src={item.image} alt={item.name} />
+                  {/* loading="lazy" defers off-screen images until needed */}
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    loading="lazy"
+                    width={60}
+                    height={60}
+                  />
                   <p>{item.name}</p>
                   <p>${item.price}</p>
                   <p>{cartItems[item._id]}</p>
