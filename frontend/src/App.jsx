@@ -11,9 +11,11 @@ import BackToTop from './components/BackToTop/BackToTop';
 import ScrollToTop from './components/ScrollToTop/ScrollToTop';
 import Preloader from './components/Preloader/Preloader';
 
+// ✅ Normal import (Cart is no longer lazy)
+import Cart from "./pages/Cart/cart";
+
 // Lazy-loaded page components
 const Home       = lazy(() => import("./pages/Home/home"));
-const Cart       = lazy(() => import("./pages/Cart/cart"));
 const PlaceOrder = lazy(() => import("./pages/Place Order/placeorder"));
 const Verify     = lazy(() => import("./pages/verify/verify"));
 const MyOrders   = lazy(() => import("./pages/myOrders/myorders"));
@@ -33,14 +35,16 @@ const PageTransition = ({ children }) => (
 
 // Fallback shown while a lazy chunk is loading
 const PageLoader = () => (
-  <div style={{
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    minHeight: '60vh',
-    fontSize: '1.1rem',
-    color: '#888',
-  }}>
+  <div
+    style={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      minHeight: '60vh',
+      fontSize: '1.1rem',
+      color: '#888',
+    }}
+  >
     Loading…
   </div>
 );
@@ -65,28 +69,44 @@ const App = () => {
         <Navbar setShowLogin={setShowLogin} />
         <ScrollToTop />
 
-        {/* Suspense wraps ALL lazy routes — one boundary covers every route */}
+        {/* Suspense wraps ALL lazy routes */}
         <Suspense fallback={<PageLoader />}>
           <AnimatePresence mode="wait">
             <Routes location={location} key={location.pathname}>
 
-              <Route path="/" element={
-                <PageTransition><Home /></PageTransition>
-              } />
+              <Route
+                path="/"
+                element={
+                  <PageTransition>
+                    <Home />
+                  </PageTransition>
+                }
+              />
 
-              {/* Cart & Order don't need the slide transition, but you can add it */}
-              <Route path="/cart"     element={<Cart />} />
-              <Route path="/order"    element={<PlaceOrder />} />
+              {/* ✅ Cart is now normal (no lazy) */}
+              <Route path="/cart" element={<Cart />} />
 
-              <Route path="/verify" element={
-                <PageTransition><Verify /></PageTransition>
-              } />
+              <Route path="/order" element={<PlaceOrder />} />
+
+              <Route
+                path="/verify"
+                element={
+                  <PageTransition>
+                    <Verify />
+                  </PageTransition>
+                }
+              />
 
               <Route path="/myorders" element={<MyOrders />} />
 
-              <Route path="/menu" element={
-                <PageTransition><Menu /></PageTransition>
-              } />
+              <Route
+                path="/menu"
+                element={
+                  <PageTransition>
+                    <Menu />
+                  </PageTransition>
+                }
+              />
 
             </Routes>
           </AnimatePresence>
