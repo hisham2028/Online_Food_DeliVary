@@ -15,30 +15,27 @@ import MyOrders from './pages/myOrders/myorders';
 import Menu from './pages/Menu/menu';
 import BackToTop from './components/BackToTop/BackToTop';
 import ScrollToTop from './components/ScrollToTop/ScrollToTop';
+import Preloader from './components/Preloader/Preloader'; // ← ADD THIS
 
 const App = () => {
-  const url = "http://localhost:4002";
+  const url = "http://localhost:4002https://online-food-delivary-backend2.onrender.com/";
   const location = useLocation();
-  
+
   const [showLogin, setShowLogin] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // ← ADD THIS
 
   return (
     <>
-      {/* Toast notifications for success/error messages */}
+      {isLoading && <Preloader onComplete={() => setIsLoading(false)} />}
+
       <ToastContainer position="top-center" autoClose={3000} />
 
-      {/* Conditional Popups */}
-      {showLogin && (
-        <Login 
-          setShowLogin={setShowLogin} 
-        />
-      )}
+      {showLogin && <Login setShowLogin={setShowLogin} />}
 
       <div className="app">
         <Navbar setShowLogin={setShowLogin} />
         <ScrollToTop />
-        
-        
+
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
             <Route path="/" element={
@@ -77,7 +74,7 @@ const App = () => {
           </Routes>
         </AnimatePresence>
       </div>
-      
+
       <Footer />
       <BackToTop />
     </>

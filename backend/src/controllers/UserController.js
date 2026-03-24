@@ -26,9 +26,9 @@ class UserController {
 
       // ✅ Block login if not verified
       if (!user.isVerified) {
-        return res.status(401).json({ 
-          success: false, 
-          message: "Please verify your email before logging in. Check your inbox." 
+        return res.status(401).json({
+          success: false,
+          message: "Please verify your email before logging in. Check your inbox."
         });
       }
 
@@ -63,9 +63,19 @@ class UserController {
 
       const existingUser = await this.userModel.findByEmail(email);
       if (existingUser) {
+        // ✅ If exists but not verified, resend verification email
+        if (!existingUser.isVerified) {
+          const verificationToken = crypto.randomBytes(32).toString('hex');
+          const verificationTokenExpire = Date.now() + 24 * 60 * 60 * 1000;
+          await this.userModel.updateById(existingUser._id, { verificationToken, verificationTokenExpire });
+          await EmailService.sendVerificationEmail(email, verificationToken);
+          return res.json({
+            success: true,
+            message: "Account exists but is not verified. We resent the verification email — please check your inbox."
+          });
+        }
         return res.status(409).json({ success: false, message: "User Already Exists" });
       }
-
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -85,9 +95,9 @@ class UserController {
       // ✅ Send verification email
       await EmailService.sendVerificationEmail(email, verificationToken);
 
-      res.json({ 
-        success: true, 
-        message: "Registration successful! Please check your email to verify your account." 
+      res.json({
+        success: true,
+        message: "Registration successful! Please check your email to verify your account."
       });
     } catch (error) {
       console.error("REGISTER ERROR:", error);
