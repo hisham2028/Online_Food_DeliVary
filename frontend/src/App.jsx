@@ -11,49 +11,42 @@ import BackToTop from './components/BackToTop/BackToTop';
 import ScrollToTop from './components/ScrollToTop/ScrollToTop';
 import Preloader from './components/Preloader/Preloader';
 
-// ✅ Normal import (Cart is no longer lazy)
-import Cart from "./pages/Cart/cart";
-
-// Lazy-loaded page components
+// ── Lazy-loaded pages (each becomes its own JS chunk) ──
 const Home       = lazy(() => import("./pages/Home/home"));
+const Cart       = lazy(() => import("./pages/Cart/cart"));
 const PlaceOrder = lazy(() => import("./pages/Place Order/placeorder"));
 const Verify     = lazy(() => import("./pages/verify/verify"));
 const MyOrders   = lazy(() => import("./pages/myOrders/myorders"));
 const Menu       = lazy(() => import("./pages/Menu/menu"));
 
-// Shared page transition wrapper
+// ── Fade-only transition — no x-slide to prevent horizontal layout shift ──
 const PageTransition = ({ children }) => (
   <motion.div
-    initial={{ opacity: 0, x: 100 }}
-    animate={{ opacity: 1, x: 0 }}
-    exit={{ opacity: 0, x: -100 }}
-    transition={{ duration: 0.5 }}
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    transition={{ duration: 0.35, ease: 'easeInOut' }}
   >
     {children}
   </motion.div>
 );
 
-// Fallback shown while a lazy chunk is loading
+// ── Shown while a lazy chunk is fetching ──
 const PageLoader = () => (
-  <div
-    style={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      minHeight: '60vh',
-      fontSize: '1.1rem',
-      color: '#888',
-    }}
-  >
+  <div style={{
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    minHeight: '60vh',
+    color: '#888',
+    fontSize: '1rem',
+  }}>
     Loading…
   </div>
 );
 
 const App = () => {
-  const url = "https://online-food-delivary-backend2.onrender.com/";
-  const url2 = "http://localhost:5000/";
   const location = useLocation();
-
   const [showLogin, setShowLogin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -69,44 +62,33 @@ const App = () => {
         <Navbar setShowLogin={setShowLogin} />
         <ScrollToTop />
 
-        {/* Suspense wraps ALL lazy routes */}
         <Suspense fallback={<PageLoader />}>
           <AnimatePresence mode="wait">
             <Routes location={location} key={location.pathname}>
 
-              <Route
-                path="/"
-                element={
-                  <PageTransition>
-                    <Home />
-                  </PageTransition>
-                }
-              />
+              <Route path="/" element={
+                <PageTransition><Home /></PageTransition>
+              } />
 
-              {/* ✅ Cart is now normal (no lazy) */}
-              <Route path="/cart" element={<Cart />} />
+              <Route path="/cart" element={
+                <PageTransition><Cart /></PageTransition>
+              } />
 
-              <Route path="/order" element={<PlaceOrder />} />
+              <Route path="/order" element={
+                <PageTransition><PlaceOrder /></PageTransition>
+              } />
 
-              <Route
-                path="/verify"
-                element={
-                  <PageTransition>
-                    <Verify />
-                  </PageTransition>
-                }
-              />
+              <Route path="/verify" element={
+                <PageTransition><Verify /></PageTransition>
+              } />
 
-              <Route path="/myorders" element={<MyOrders />} />
+              <Route path="/myorders" element={
+                <PageTransition><MyOrders /></PageTransition>
+              } />
 
-              <Route
-                path="/menu"
-                element={
-                  <PageTransition>
-                    <Menu />
-                  </PageTransition>
-                }
-              />
+              <Route path="/menu" element={
+                <PageTransition><Menu /></PageTransition>
+              } />
 
             </Routes>
           </AnimatePresence>

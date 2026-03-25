@@ -11,8 +11,8 @@ const MESSAGES = [
 const PROGRESS_STEPS = [
   { value: 25,  delay: 0    },
   { value: 50,  delay: 400  },
-  { value: 75,  delay: 800 },
-  { value: 100, delay: 1200 },
+  { value: 75,  delay: 800  },
+  { value: 100, delay: 1600 },
 ];
 
 /* ── Stars ── */
@@ -51,7 +51,7 @@ const TICKS = Array.from({ length: 48 }, (_, i) => {
   };
 });
 
-/* ── Tiny premium burger (dark themed) ── */
+/* ── Tiny premium burger ── */
 const TinyBurger = ({ size = 20 }) => (
   <svg width={size} height={Math.round(size * 0.9)} viewBox="0 0 20 18" style={{ display: 'block' }}>
     <rect x="1"   y="13.5" width="18" height="3.5" rx="1.5" fill="#c8883a" opacity="0.9" />
@@ -102,8 +102,11 @@ export default function Preloader({ onComplete }) {
   const [assembled, setAssembled] = useState(false);
   const [exiting, setExiting]     = useState(false);
 
+  // Smoothly interpolated display value for the number counter
+  const [displayNum, setDisplayNum] = useState(0);
+
   const cursorRef = useRef(null);
-  const ringRef   = useRef(null);
+  const prevProgress = useRef(0);
 
   const mouseX  = useMotionValue(0);
   const mouseY  = useMotionValue(0);
@@ -126,13 +129,36 @@ export default function Preloader({ onComplete }) {
     return () => window.removeEventListener('mousemove', move);
   }, [mouseX, mouseY]);
 
-  /* Progress */
+  /* Progress steps */
   useEffect(() => {
     const timers = PROGRESS_STEPS.map(({ value, delay }) =>
       setTimeout(() => setProgress(value), delay)
     );
     return () => timers.forEach(clearTimeout);
   }, []);
+
+  /* Smoothly count up the display number to match progress */
+  useEffect(() => {
+    const start = prevProgress.current;
+    const end   = progress;
+    prevProgress.current = end;
+
+    // How long the count-up takes (matches the bar transition)
+    const duration = 600; // ms
+    const startTime = performance.now();
+
+    let raf;
+    const tick = (now) => {
+      const elapsed = now - startTime;
+      const t = Math.min(elapsed / duration, 1);
+      // ease-out cubic
+      const eased = 1 - Math.pow(1 - t, 3);
+      setDisplayNum(Math.round(start + (end - start) * eased));
+      if (t < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [progress]);
 
   /* Messages */
   useEffect(() => {
@@ -141,7 +167,7 @@ export default function Preloader({ onComplete }) {
     return () => clearTimeout(t);
   }, [msgIndex]);
 
-  /* Assemble */
+  /* Assemble burger */
   useEffect(() => {
     if (progress >= 5 && !assembled) setAssembled(true);
   }, [progress, assembled]);
@@ -185,12 +211,12 @@ export default function Preloader({ onComplete }) {
                 key={s.id}
                 className="pl-star"
                 style={{
-                  left:             `${s.x}%`,
-                  top:              `${s.y}%`,
-                  width:            `${s.size}px`,
-                  height:           `${s.size}px`,
-                  animationDuration:`${s.duration}s`,
-                  animationDelay:   `${s.delay}s`,
+                  left:              `${s.x}%`,
+                  top:               `${s.y}%`,
+                  width:             `${s.size}px`,
+                  height:            `${s.size}px`,
+                  animationDuration: `${s.duration}s`,
+                  animationDelay:    `${s.delay}s`,
                 }}
               />
             ))}
@@ -265,7 +291,7 @@ export default function Preloader({ onComplete }) {
                 />
               ))}
 
-              {/* Progress arc */}
+              {/* Progress arc — fixed: duration 0.6s with smooth ease */}
               <motion.circle
                 className="pl-ring-fill"
                 cx="94" cy="94" r="82"
@@ -321,7 +347,7 @@ export default function Preloader({ onComplete }) {
             </div>
           </motion.div>
 
-          {/* Progress */}
+          {/* Progress bar + counter */}
           <motion.div
             className="pl-progress-wrap"
             initial={{ opacity: 0 }}
@@ -335,9 +361,10 @@ export default function Preloader({ onComplete }) {
                 transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
               />
             </div>
-            <motion.span className="pl-progress-num">
-              {String(progress).padStart(3, '0')}
-            </motion.span>
+            {/* displayNum counts up smoothly via rAF instead of jumping */}
+            <span className="pl-progress-num">
+              {String(displayNum).padStart(3, '0')}
+            </span>
           </motion.div>
 
         </motion.div>

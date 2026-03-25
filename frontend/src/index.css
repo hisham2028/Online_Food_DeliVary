@@ -81,11 +81,22 @@
   scroll-behavior: smooth;
 }
 
+/* ── Scrollbar shift fix ──────────────────────────────────────────────────
+   When the preloader exits and the page becomes scrollable, the scrollbar
+   appearing steals ~15px of width — that's the horizontal shake.
+   overflow-y: scroll  → always reserves the scrollbar lane (desktop)
+   scrollbar-gutter    → modern browsers keep the gutter even when hidden
+   Both together eliminate the layout shift on all browsers.
+─────────────────────────────────────────────────────────────────────────── */
+html {
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
+
 body {
   background: #fef3c7;
   color: var(--text-primary);
   min-height: 100vh;
-  /* ✅ REMOVED: background-attachment: fixed — causes layout distortion on deployed/mobile environments */
 }
 
 .container {
@@ -101,6 +112,8 @@ body {
   margin: 0 auto;
   min-height: 100vh;
   padding-top: 40px;
+  /* Prevent any child animation from creating a horizontal scrollbar */
+  overflow-x: hidden;
 }
 
 @media (max-width: 1050px) {
