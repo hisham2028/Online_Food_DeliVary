@@ -12,7 +12,7 @@ const PROGRESS_STEPS = [
   { value: 25,  delay: 0    },
   { value: 50,  delay: 400  },
   { value: 75,  delay: 800  },
-  { value: 100, delay: 1600 },
+  { value: 100, delay: 1200 },
 ];
 
 /* ── Stars ── */
