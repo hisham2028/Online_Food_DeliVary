@@ -1,6 +1,7 @@
 import OrderModel from "../models/OrderModel.js";
 import UserModel from "../models/UserModel.js";
 import StripeService from "../services/StripeService.js";
+import mongoose from "mongoose";
 
 class OrderController {
   constructor() {
@@ -36,6 +37,14 @@ class OrderController {
 
   verifyOrder = async (req, res) => {
     const { orderId, success } = req.body;
+
+    if (
+      typeof orderId !== "string" ||
+      !mongoose.Types.ObjectId.isValid(orderId)
+    ) {
+      return res.status(400).json({ success: false, message: "Invalid orderId" });
+    }
+
     try {
       if (success === "true") {
         await this.orderModel.updatePaymentStatus(orderId, true);
