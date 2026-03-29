@@ -42,7 +42,7 @@ class OrderModel {
   }
 
   async findById(id) {
-    return await this.model.findById(id);
+    return await this.model.findOne({ _id: { $eq: id } });
   }
 
   async findByUserId(userId) {
@@ -54,11 +54,11 @@ class OrderModel {
   }
 
   async updateById(id, updateData) {
-    return await this.model.findByIdAndUpdate(id, updateData, { new: true });
+    return await this.model.findOneAndUpdate({ _id: { $eq: id } }, updateData, { new: true });
   }
 
   async deleteById(id) {
-    return await this.model.findByIdAndDelete(id);
+    return await this.model.deleteOne({ _id: { $eq: id } });
   }
 
   async updateStatus(orderId, status) {
