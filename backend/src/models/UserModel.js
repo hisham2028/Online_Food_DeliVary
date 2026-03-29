@@ -34,7 +34,10 @@ class UserModel {
   }
 
   async findByEmail(email) {
-    return await this.model.findOne({ email });
+    if (typeof email !== "string") {
+      return null;
+    }
+    return await this.model.findOne({ email: { $eq: email } });
   }
 
   async findByVerificationToken(token) {
