@@ -42,6 +42,10 @@ class FoodModel {
   }
 
   async findById(id) {
+    // Ensure id is a literal value and a valid ObjectId before querying
+    if (typeof id !== "string" || !mongoose.Types.ObjectId.isValid(id)) {
+      return null;
+    }
     return await this.model.findById(id);
   }
 
