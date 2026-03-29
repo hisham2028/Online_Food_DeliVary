@@ -61,7 +61,16 @@ class OrderController {
 
   getUserOrders = async (req, res) => {
     try {
-      const orders = await this.orderModel.findByUserId(req.body.userId);
+      const { userId } = req.body;
+
+      if (
+        typeof userId !== "string" ||
+        !mongoose.Types.ObjectId.isValid(userId)
+      ) {
+        return res.status(400).json({ success: false, message: "Invalid userId" });
+      }
+
+      const orders = await this.orderModel.findByUserId(userId);
       res.json({ success: true, data: orders });
     } catch (error) {
       console.log(error);
