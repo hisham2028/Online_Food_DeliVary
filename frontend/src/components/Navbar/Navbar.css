@@ -261,9 +261,14 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  color: var(--text-primary);
+  color: #000000;
   transition: all 0.2s ease;
   cursor: pointer;
+  font-weight: 600;
+}
+
+.nav-profile-dropdown li p {
+  color: #000000;
 }
 
 .nav-profile-dropdown li:hover {
