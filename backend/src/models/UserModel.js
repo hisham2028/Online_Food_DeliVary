@@ -26,11 +26,18 @@ class UserModel {
   }
 
   async findById(id) {
-    return await this.model.findById(id);
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return null;
+    }
+    const objectId = new mongoose.Types.ObjectId(id);
+    return await this.model.findById(objectId);
   }
 
   async findByEmail(email) {
-    return await this.model.findOne({ email });
+    if (typeof email !== "string") {
+      return null;
+    }
+    return await this.model.findOne({ email: { $eq: email } });
   }
 
   async findByVerificationToken(token) {
@@ -41,19 +48,35 @@ class UserModel {
   }
 
   async updateById(id, updateData) {
-    return await this.model.findByIdAndUpdate(id, updateData, { new: true });
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return null;
+    }
+    const objectId = new mongoose.Types.ObjectId(id);
+    return await this.model.findByIdAndUpdate(objectId, updateData, { new: true });
   }
 
   async deleteById(id) {
-    return await this.model.findByIdAndDelete(id);
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return null;
+    }
+    const objectId = new mongoose.Types.ObjectId(id);
+    return await this.model.findByIdAndDelete(objectId);
   }
 
   async updateCart(userId, cartData) {
-    return await this.model.findByIdAndUpdate(userId, { cartData }, { new: true });
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return null;
+    }
+    const objectId = new mongoose.Types.ObjectId(userId);
+    return await this.model.findByIdAndUpdate(objectId, { cartData }, { new: true });
   }
 
   async clearCart(userId) {
-    return await this.model.findByIdAndUpdate(userId, { cartData: {} }, { new: true });
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return null;
+    }
+    const objectId = new mongoose.Types.ObjectId(userId);
+    return await this.model.findByIdAndUpdate(objectId, { cartData: {} }, { new: true });
   }
 
   getModel() {

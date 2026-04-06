@@ -42,6 +42,10 @@ class FoodModel {
   }
 
   async findById(id) {
+    // Ensure id is a literal value and a valid ObjectId before querying
+    if (typeof id !== "string" || !mongoose.Types.ObjectId.isValid(id)) {
+      return null;
+    }
     return await this.model.findById(id);
   }
 
@@ -50,11 +54,44 @@ class FoodModel {
   }
 
   async updateById(id, updateData, options = {}) {
-    return await this.model.findByIdAndUpdate(id, updateData, { 
-      new: true, 
-      runValidators: true,
-      ...options 
-    });
+    // Ensure id is a literal value and a valid ObjectId before querying
+    if (typeof id !== "string" || !mongoose.Types.ObjectId.isValid(id)) {
+      return null;
+    }
+
+    // Only allow plain object updates
+    if (!updateData || typeof updateData !== "object" || Array.isArray(updateData)) {
+      return null;
+    }
+
+    // Whitelist of fields that can be updated
+    const allowedFields = ["name", "description", "price", "image", "category", "isAvailable"];
+    const safeUpdate = {};
+
+    for (const [key, value] of Object.entries(updateData)) {
+      // Disallow MongoDB operator-style or path-style keys
+      if (typeof key !== "string" || key.startsWith("$") || key.includes(".")) {
+        continue;
+      }
+      if (allowedFields.includes(key)) {
+        safeUpdate[key] = value;
+      }
+    }
+
+    // If nothing safe to update, avoid calling the database
+    if (Object.keys(safeUpdate).length === 0) {
+      return null;
+    }
+
+    return await this.model.findByIdAndUpdate(
+      id,
+      { $set: safeUpdate },
+      {
+        new: true,
+        runValidators: true,
+        ...options
+      }
+    );
   }
 
   async deleteById(id) {
