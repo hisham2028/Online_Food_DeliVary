@@ -10,6 +10,10 @@ const PlaceOrder = () => {
     const navigate = useNavigate();
     const [method, setMethod] = useState("cod");
 
+    const hasValidToken = (value) => {
+        return Boolean(value && value !== 'undefined' && value !== 'null');
+    };
+
     const [data, setData] = useState({
         firstName: "",
         lastName: "",
@@ -29,13 +33,28 @@ const PlaceOrder = () => {
     };
 
     useEffect(() => {
+        const authToken = token || localStorage.getItem('token');
+
+        if (!hasValidToken(authToken)) {
+            toast.error('Please login to continue');
+            navigate('/cart');
+            return;
+        }
+
         if (getTotalCartAmount() === 0) {
             navigate('/cart');
         }
-    }, [getTotalCartAmount, navigate]); 
+    }, [token, getTotalCartAmount, navigate]); 
 
     const placeOrder = async (event) => {
         event.preventDefault();
+
+        const authToken = token || localStorage.getItem('token');
+        if (!hasValidToken(authToken)) {
+            toast.error('Please login to continue');
+            navigate('/cart');
+            return;
+        }
         
         let orderItems = [];
         food_list.map((item) => {

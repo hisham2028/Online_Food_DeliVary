@@ -2,10 +2,15 @@ import React from 'react';
 import './cart.css';
 import { useStore } from '../../context/StoreContext';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const Cart = () => {
-  const { cartItems, food_list, removeFromCart, getTotalCartAmount } = useStore();
+  const { cartItems, food_list, removeFromCart, getTotalCartAmount, token } = useStore();
   const navigate = useNavigate();
+
+  const hasValidToken = (value) => {
+    return Boolean(value && value !== 'undefined' && value !== 'null');
+  };
 
   const removeItemCompletely = (itemId) => {
     removeFromCart(itemId, true);
@@ -14,6 +19,18 @@ const Cart = () => {
   const subtotal    = getTotalCartAmount();
   const deliveryFee = subtotal === 0 ? 0 : 2;
   const total       = subtotal + deliveryFee;
+
+  const handleProceedToCheckout = () => {
+    const authToken = token || localStorage.getItem('token');
+
+    if (!hasValidToken(authToken)) {
+      toast.error('Please login to continue');
+      window.alert('Please login to continue');
+      return;
+    }
+
+    navigate('/order');
+  };
 
   return (
     <div className='cart'>
@@ -65,7 +82,7 @@ const Cart = () => {
             <hr />
             <div className="cart-total-details"><b>Total</b><b>${subtotal === 0 ? 0 : total}</b></div>
           </div>
-          <button onClick={() => navigate('/order')}>PROCEED TO CHECKOUT</button>
+          <button onClick={handleProceedToCheckout}>PROCEED TO CHECKOUT</button>
         </div>
         <div className="cart-promocode">
           <div>
