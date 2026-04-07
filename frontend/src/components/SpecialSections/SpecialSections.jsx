@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import './SpecialSections.css';
 import { assets } from '../../assets/assets';
 
@@ -28,6 +28,16 @@ const SpecialSections = () => {
     },
   ];
 
+  const fallbackImage = assets.signature_dishes;
+  const currentImage = sections[activeIndex]?.image || fallbackImage;
+
+  useEffect(() => {
+    sections.forEach((section) => {
+      const img = new Image();
+      img.src = section.image || fallbackImage;
+    });
+  }, []);
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -35,7 +45,6 @@ const SpecialSections = () => {
           if (entry.isIntersecting) {
             const index = sectionRefs.current.indexOf(entry.target);
             if (index !== -1) {
-              console.log("Active Section:", index); // Check your console!
               setActiveIndex(index);
             }
           }
@@ -52,40 +61,40 @@ const SpecialSections = () => {
     <div className="special-sections-wrapper">
       {/* FIXED BACKGROUND THAT UPDATES */}
       <div className="bg-anchor">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeIndex}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.7 }}
-            className="bg-layer"
-            style={{ 
-              backgroundImage: `url(${sections[activeIndex].image})`,
-              backgroundColor: '#1a1a1a' // Dark gray if image fails
-            }}
-          />
-        </AnimatePresence>
+        <motion.div
+          key={activeIndex}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.45 }}
+          className="bg-layer"
+          style={{ 
+            backgroundImage: `url(${currentImage})`,
+            backgroundColor: '#1a1a1a'
+          }}
+        />
         <div className="bg-vignette"></div>
+
+        <div className="image-sticky-side">
+          <div className="image-box">
+            <motion.img
+              key={activeIndex}
+              src={currentImage}
+              onError={(event) => {
+                if (event.currentTarget.src !== fallbackImage) {
+                  event.currentTarget.src = fallbackImage;
+                }
+              }}
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.35 }}
+              className="active-feature-img"
+              alt={sections[activeIndex]?.title || 'Special section image'}
+            />
+          </div>
+        </div>
       </div>
 
       <div className="main-content-grid">
-        <div className="image-sticky-side">
-          <div className="image-box">
-            <AnimatePresence mode="wait">
-              <motion.img
-                key={activeIndex}
-                src={sections[activeIndex].image}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 1.1 }}
-                transition={{ duration: 0.5 }}
-                className="active-feature-img"
-              />
-            </AnimatePresence>
-          </div>
-        </div>
-
         <div className="text-scroll-side">
           {sections.map((section, index) => (
             <div
