@@ -4,7 +4,7 @@ import './SpecialSections.css';
 import { assets } from '../../assets/assets';
 
 const SpecialSections = () => {
-  const sectionRefs = useRef([]);
+  const wrapperRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
   const sections = [
@@ -39,26 +39,46 @@ const SpecialSections = () => {
   }, []);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const index = sectionRefs.current.indexOf(entry.target);
-            if (index !== -1) {
-              setActiveIndex(index);
-            }
-          }
-        });
-      },
-      { threshold: 0.1, rootMargin: '-30% 0px -30% 0px' }
-    );
+    let rafId = null;
 
-    sectionRefs.current.forEach((ref) => ref && observer.observe(ref));
-    return () => observer.disconnect();
-  }, []);
+    const updateActiveSection = () => {
+      const wrapper = wrapperRef.current;
+      if (!wrapper) return;
+
+      const rect = wrapper.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const totalScrollable = Math.max(rect.height - viewportHeight, 1);
+      const passed = Math.min(Math.max(-rect.top, 0), totalScrollable);
+      const segment = totalScrollable / (sections.length - 1 || 1);
+      const nextIndex = Math.min(
+        sections.length - 1,
+        Math.max(0, Math.round(passed / Math.max(segment, 1)))
+      );
+
+      setActiveIndex(nextIndex);
+    };
+
+    const onScroll = () => {
+      if (rafId) return;
+      rafId = window.requestAnimationFrame(() => {
+        updateActiveSection();
+        rafId = null;
+      });
+    };
+
+    updateActiveSection();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      if (rafId) window.cancelAnimationFrame(rafId);
+    };
+  }, [sections.length]);
 
   return (
-    <div className="special-sections-wrapper">
+    <div className="special-sections-wrapper" ref={wrapperRef}>
       {/* FIXED BACKGROUND THAT UPDATES */}
       <div className="bg-anchor">
         <motion.div
@@ -92,22 +112,32 @@ const SpecialSections = () => {
             />
           </div>
         </div>
+
+        <div className="text-sticky-side">
+          <motion.div
+            key={activeIndex}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="content-inner"
+          >
+            <span className="idx">0{activeIndex + 1}</span>
+            <h2>{sections[activeIndex].title}</h2>
+            <p>{sections[activeIndex].description}</p>
+          </motion.div>
+        </div>
       </div>
 
-      <div className="main-content-grid">
+      <div className="scroll-track" aria-hidden="true">
+        {sections.map((section) => (
+          <div key={section.id} className="scroll-step" />
+        ))}
+      </div>
+
+      <div className="main-content-grid" aria-hidden="true">
         <div className="text-scroll-side">
-          {sections.map((section, index) => (
-            <div
-              key={section.id}
-              ref={(el) => (sectionRefs.current[index] = el)}
-              className={`scroll-block ${activeIndex === index ? 'active' : ''}`}
-            >
-              <div className="content-inner">
-                <span className="idx">0{index + 1}</span>
-                <h2>{section.title}</h2>
-                <p>{section.description}</p>
-              </div>
-            </div>
+          {sections.map((section) => (
+            <div key={section.id} className="scroll-block" />
           ))}
         </div>
       </div>
