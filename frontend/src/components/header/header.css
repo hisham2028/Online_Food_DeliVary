@@ -1,14 +1,16 @@
 .header {
   width: 90%;
-  height: 36vw; /* Slightly taller for a more premium feel */
+  max-width: 1200px; /* <--- Added this to keep it looking sharp on huge screens */
+  height: 36vw; 
   max-height: 500px;
-  margin: 0 auto 0; /* Remove top margin to connect to navbar */
+  margin: 0 auto; /* Cleaned up the 0 auto 0 slightly */
   position: relative;
-  border-radius: 20px; /* Softer corners */
+  border-radius: 20px; 
   overflow: hidden;
-  background-color: #111; /* Fallback color */
+  background-color: #111; 
 }
 
+/* ... The rest of your Header CSS is absolutely perfect and can stay exactly as it is! ... */
 /* Sliding Background Layers */
 .header-bg {
   position: absolute;

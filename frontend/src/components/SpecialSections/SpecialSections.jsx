@@ -4,7 +4,8 @@ import './SpecialSections.css';
 import { assets } from '../../assets/assets';
 
 const SpecialSections = () => {
-  const wrapperRef = useRef(null);
+  const activeIndexRef = useRef(0);
+  const wheelLockRef = useRef(false);
   const [activeIndex, setActiveIndex] = useState(0);
 
   const sections = [
@@ -32,55 +33,46 @@ const SpecialSections = () => {
   const currentImage = sections[activeIndex]?.image || fallbackImage;
 
   useEffect(() => {
+    activeIndexRef.current = activeIndex;
+  }, [activeIndex]);
+
+  useEffect(() => {
     sections.forEach((section) => {
       const img = new Image();
       img.src = section.image || fallbackImage;
     });
   }, []);
 
-  useEffect(() => {
-    let rafId = null;
+  const handleWheel = (event) => {
+    const delta = event.deltaY;
+    const lastIndex = sections.length - 1;
+    const current = activeIndexRef.current;
 
-    const updateActiveSection = () => {
-      const wrapper = wrapperRef.current;
-      if (!wrapper) return;
+    if (wheelLockRef.current || Math.abs(delta) < 8) return;
 
-      const rect = wrapper.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-      const totalScrollable = Math.max(rect.height - viewportHeight, 1);
-      const passed = Math.min(Math.max(-rect.top, 0), totalScrollable);
-      const segment = totalScrollable / (sections.length - 1 || 1);
-      const nextIndex = Math.min(
-        sections.length - 1,
-        Math.max(0, Math.round(passed / Math.max(segment, 1)))
-      );
+    if (delta > 0 && current < lastIndex) {
+      event.preventDefault();
+      wheelLockRef.current = true;
+      setActiveIndex(current + 1);
+      setTimeout(() => {
+        wheelLockRef.current = false;
+      }, 420);
+      return;
+    }
 
-      setActiveIndex(nextIndex);
-    };
-
-    const onScroll = () => {
-      if (rafId) return;
-      rafId = window.requestAnimationFrame(() => {
-        updateActiveSection();
-        rafId = null;
-      });
-    };
-
-    updateActiveSection();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
-
-    return () => {
-      window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', onScroll);
-      if (rafId) window.cancelAnimationFrame(rafId);
-    };
-  }, [sections.length]);
+    if (delta < 0 && current > 0) {
+      event.preventDefault();
+      wheelLockRef.current = true;
+      setActiveIndex(current - 1);
+      setTimeout(() => {
+        wheelLockRef.current = false;
+      }, 420);
+    }
+  };
 
   return (
-    <div className="special-sections-wrapper" ref={wrapperRef}>
-      {/* FIXED BACKGROUND THAT UPDATES */}
-      <div className="bg-anchor">
+    <section className="special-sections-wrapper" onWheel={handleWheel}>
+      <div className="special-sections-window">
         <motion.div
           key={activeIndex}
           initial={{ opacity: 0 }}
@@ -94,7 +86,8 @@ const SpecialSections = () => {
         />
         <div className="bg-vignette"></div>
 
-        <div className="image-sticky-side">
+        <div className="window-content">
+          <div className="image-sticky-side">
           <div className="image-box">
             <motion.img
               key={activeIndex}
@@ -113,7 +106,7 @@ const SpecialSections = () => {
           </div>
         </div>
 
-        <div className="text-sticky-side">
+          <div className="text-sticky-side">
           <motion.div
             key={activeIndex}
             initial={{ opacity: 0, y: 10 }}
@@ -126,22 +119,9 @@ const SpecialSections = () => {
             <p>{sections[activeIndex].description}</p>
           </motion.div>
         </div>
-      </div>
-
-      <div className="scroll-track" aria-hidden="true">
-        {sections.map((section) => (
-          <div key={section.id} className="scroll-step" />
-        ))}
-      </div>
-
-      <div className="main-content-grid" aria-hidden="true">
-        <div className="text-scroll-side">
-          {sections.map((section) => (
-            <div key={section.id} className="scroll-block" />
-          ))}
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

@@ -1,6 +1,10 @@
 .services-section {
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden; /* Changed to target exactly the horizontal axis */
+  width: 100%;        /* Forces it to stay within the parent */
+  max-width: 100vw;   /* Strictly caps it at the screen width */
+  box-sizing: border-box; /* Ensures padding doesn't make it wider than 100vw */
+  
   margin-top: 80px;
   padding: 100px 20px;
   text-align: center;
