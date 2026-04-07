@@ -1,11 +1,12 @@
 .special-sections-wrapper {
   position: relative;
   width: 100%;
-  min-height: 300vh;
+  min-height: 300vh; /* Ensures there is enough room to scroll */
   background: #000;
   overflow: clip;
 }
 
+/* THE BACKGROUND FIX */
 .bg-anchor {
   position: sticky;
   top: 0;
@@ -21,8 +22,8 @@
   inset: 0;
   background-size: cover;
   background-position: center;
-  filter: blur(0px) brightness(0.3);
-  transform: scale(1.2);
+  filter: blur(0px) brightness(0.3); /* High blur to make it look like a glow */
+  transform: scale(1.2); /* Hide edges */
 }
 
 .bg-vignette {
@@ -32,11 +33,12 @@
   z-index: 2;
 }
 
+/* CONTENT LAYOUT */
 .main-content-grid {
   position: relative;
   display: flex;
   z-index: 10;
-  margin-top: -100vh;
+  margin-top: -100vh; /* Pulls content up over the sticky background */
 }
 
 .image-sticky-side {
@@ -91,91 +93,13 @@
   font-size: 1.2rem;
 }
 
-.content-inner h2 {
+h2 {
   font-size: 4rem;
   margin: 1rem 0;
 }
 
-.content-inner p {
+p {
   font-size: 1.3rem;
   line-height: 1.6;
   color: #ccc;
-}
-
-@media (max-width: 1024px) {
-  .special-sections-wrapper {
-    min-height: auto;
-  }
-
-  .bg-anchor {
-    position: absolute;
-    height: 100%;
-  }
-
-  .main-content-grid {
-    margin-top: 0;
-    flex-direction: column;
-  }
-
-  .image-sticky-side {
-    position: sticky;
-    height: 50vh;
-    top: 0;
-    z-index: 11;
-    padding: 20px;
-  }
-
-  .image-box {
-    width: 100%;
-    height: 100%;
-  }
-
-  .text-scroll-side {
-    width: 100%;
-  }
-
-  .scroll-block {
-    height: 70vh;
-    padding: 0 8%;
-  }
-
-  .content-inner h2 {
-    font-size: clamp(2rem, 7vw, 3rem);
-  }
-
-  .content-inner p {
-    font-size: 1.05rem;
-  }
-}
-
-@media (max-width: 640px) {
-  .special-sections-wrapper {
-    overflow: hidden;
-  }
-
-  .image-sticky-side {
-    height: 42vh;
-    padding: 14px;
-  }
-
-  .image-box {
-    border-radius: 16px;
-  }
-
-  .scroll-block {
-    height: 62vh;
-    padding: 0 20px;
-  }
-
-  .idx {
-    font-size: 1rem;
-  }
-
-  .content-inner h2 {
-    font-size: 1.9rem;
-  }
-
-  .content-inner p {
-    font-size: 1rem;
-  }
 }
