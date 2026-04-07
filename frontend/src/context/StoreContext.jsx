@@ -8,6 +8,8 @@ export const useStore = () => useContext(StoreContext);
 const StoreContextProvider = ({ children }) => {
   const url = import.meta.env.VITE_API_URL || "https://online-food-delivary-backend2.onrender.com";
 
+  const hasValidToken = (value) => Boolean(value && value !== "undefined" && value !== "null");
+
   const [token, setToken] = useState("");
   const [food_list, setFoodlist] = useState([]); // always array
   const [cartItems, setCartItems] = useState({}); // always object
@@ -46,14 +48,21 @@ const StoreContextProvider = ({ children }) => {
       await fetchFoodlist();
 
       const savedToken = localStorage.getItem("token");
-      if (savedToken) {
+      if (hasValidToken(savedToken)) {
         setToken(savedToken);
-        await loadCartData(savedToken);
       }
     };
 
     loadData();
   }, []);
+
+  useEffect(() => {
+    if (hasValidToken(token)) {
+      loadCartData(token);
+      return;
+    }
+    setCartItems({});
+  }, [token]);
 
   // ================= ADD TO CART =================
   const addToCart = async (itemId) => {

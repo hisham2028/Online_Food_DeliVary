@@ -11,6 +11,7 @@ const NAV_ITEMS = [
   { to: '/add',       label: 'Add Items', icon: (a) => a.add_icon },
   { to: '/list',      label: 'List Items', icon: (a) => a.order_icon },
   { to: '/orders',    label: 'Orders',    icon: (a) => a.order_icon },
+  { to: '/settings',  label: 'Settings',  icon: (a) => a.add_icon ?? a.order_icon },
 ];
 
 // ─── NavItem ───────────────────────────────────────────────────────────────────

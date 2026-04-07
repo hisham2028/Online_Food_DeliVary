@@ -40,7 +40,7 @@ const HamburgerButton = ({ isOpen, onClick }) => (
 );
 
 // ─── Navbar ────────────────────────────────────────────────────────────────────
-const Navbar = () => {
+const Navbar = ({ onLogout }) => {
   const [isMobile,   setIsMobile]   = useState(window.innerWidth < 768);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -71,6 +71,7 @@ const Navbar = () => {
         <img className="logo" src={assets.logo} alt="Brand logo" />
       </div>
       <div className="nav-right">
+        <button type="button" className="logout-btn" onClick={onLogout}>Logout</button>
         <div className="profile-container">
           <ProfileAvatar src={assets.profile_image} />
         </div>

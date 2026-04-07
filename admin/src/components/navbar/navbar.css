@@ -36,7 +36,22 @@
 
 .menu-toggle:hover { background: #f3f4f6; }
 
-.nav-right { display: flex; align-items: center; }
+.nav-right { display: flex; align-items: center; gap: 12px; }
+
+.logout-btn {
+  border: 1px solid #f59e0b;
+  background: #fffbeb;
+  color: #b45309;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.logout-btn:hover {
+  background: #fef3c7;
+}
 
 .profile-container { display: flex; align-items: center; }
 
@@ -57,4 +72,8 @@
 
 @media (max-width: 768px) {
   .menu-toggle { display: block; }
+  .logout-btn {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
 }
