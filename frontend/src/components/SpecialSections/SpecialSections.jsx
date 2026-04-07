@@ -4,7 +4,9 @@ import './SpecialSections.css';
 import { assets } from '../../assets/assets';
 
 const SpecialSections = () => {
-  const sectionRefs = useRef([]);
+  const wrapperRef = useRef(null);
+  const activeIndexRef = useRef(0);
+  const wheelLockRef = useRef(false);
   const [activeIndex, setActiveIndex] = useState(0);
 
   const sections = [
@@ -29,27 +31,46 @@ const SpecialSections = () => {
   ];
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const index = sectionRefs.current.indexOf(entry.target);
-            if (index !== -1) {
-              console.log("Active Section:", index); // Check your console!
-              setActiveIndex(index);
-            }
-          }
-        });
-      },
-      { threshold: 0.1, rootMargin: '-30% 0px -30% 0px' }
-    );
+    activeIndexRef.current = activeIndex;
+  }, [activeIndex]);
 
-    sectionRefs.current.forEach((ref) => ref && observer.observe(ref));
-    return () => observer.disconnect();
-  }, []);
+  useEffect(() => {
+    const handleWheel = (event) => {
+      const wrapper = wrapperRef.current;
+      if (!wrapper) return;
+
+      const rect = wrapper.getBoundingClientRect();
+      const inViewport = rect.top <= 0 && rect.bottom >= window.innerHeight;
+      if (!inViewport) return;
+
+      const isDown = event.deltaY > 0;
+      const lastIndex = sections.length - 1;
+      const current = activeIndexRef.current;
+
+      if ((isDown && current >= lastIndex) || (!isDown && current <= 0)) {
+        return;
+      }
+
+      event.preventDefault();
+      if (wheelLockRef.current) return;
+
+      wheelLockRef.current = true;
+      setActiveIndex((prev) => {
+        if (isDown) return Math.min(prev + 1, lastIndex);
+        return Math.max(prev - 1, 0);
+      });
+
+      setTimeout(() => {
+        wheelLockRef.current = false;
+      }, 420);
+    };
+
+    window.addEventListener('wheel', handleWheel, { passive: false });
+    return () => window.removeEventListener('wheel', handleWheel);
+  }, [sections.length]);
 
   return (
-    <div className="special-sections-wrapper">
+    <div className="special-sections-wrapper" ref={wrapperRef}>
       {/* FIXED BACKGROUND THAT UPDATES */}
       <div className="bg-anchor">
         <AnimatePresence mode="wait">
@@ -90,7 +111,6 @@ const SpecialSections = () => {
           {sections.map((section, index) => (
             <div
               key={section.id}
-              ref={(el) => (sectionRefs.current[index] = el)}
               className={`scroll-block ${activeIndex === index ? 'active' : ''}`}
             >
               <div className="content-inner">
