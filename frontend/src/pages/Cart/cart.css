@@ -88,6 +88,16 @@
   background: var(--primary-dark);
 }
 
+.cart-checkout-message {
+  margin-top: 14px;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  background: #fff1f1;
+  border: 1px solid #ffd7d7;
+  color: #b42318;
+  font-size: 13px;
+}
+
 /* ===== 3. Promo code bar ===== */
 .cart-promocode-input {
   display: flex;

@@ -41,7 +41,7 @@ const Login = ({ setShowLogin }) => {
         setToken(response.data.token)
         localStorage.setItem("token", response.data.token);
         setShowLogin(false);
-        toast.success(currState === "Login" ? "Logged In Successfully" : "Account Created");
+        toast.success(currState === "Login" ? "Login Successful" : "Account Created");
       } else {
         toast.error(response.data.message);
       }
@@ -58,7 +58,7 @@ const Login = ({ setShowLogin }) => {
       const result = await authService.signInWithGoogle();
       setToken(result.token);
       setShowLogin(false);
-      toast.success("Logged in with Google successfully!");
+      toast.success("Login Successful");
     } catch (error) {
       console.error("Google Login Error:", error);
       toast.error("Google login failed. Please try again.");
@@ -73,7 +73,7 @@ const Login = ({ setShowLogin }) => {
       const result = await authService.signInWithFacebook();
       setToken(result.token);
       setShowLogin(false);
-      toast.success("Logged in with Facebook successfully!");
+      toast.success("Login Successful");
     } catch (error) {
       console.error("Facebook Login Error:", error);
       toast.error("Facebook login failed. Please try again.");

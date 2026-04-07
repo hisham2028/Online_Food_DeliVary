@@ -1,12 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './cart.css';
 import { useStore } from '../../context/StoreContext';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
 
 const Cart = () => {
   const { cartItems, food_list, removeFromCart, getTotalCartAmount, token } = useStore();
   const navigate = useNavigate();
+  const [checkoutMessage, setCheckoutMessage] = useState('');
 
   const hasValidToken = (value) => {
     return Boolean(value && value !== 'undefined' && value !== 'null');
@@ -24,11 +24,11 @@ const Cart = () => {
     const authToken = token || localStorage.getItem('token');
 
     if (!hasValidToken(authToken)) {
-      toast.error('Please login to continue');
-      window.alert('Please login to continue');
+      setCheckoutMessage('Please login to continue checkout.');
       return;
     }
 
+    setCheckoutMessage('');
     navigate('/order');
   };
 
@@ -82,6 +82,7 @@ const Cart = () => {
             <hr />
             <div className="cart-total-details"><b>Total</b><b>${subtotal === 0 ? 0 : total}</b></div>
           </div>
+          {checkoutMessage && <p className="cart-checkout-message">{checkoutMessage}</p>}
           <button onClick={handleProceedToCheckout}>PROCEED TO CHECKOUT</button>
         </div>
         <div className="cart-promocode">
