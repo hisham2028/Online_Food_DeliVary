@@ -1,3 +1,7 @@
+/* =========================================
+   SpecialSections.css (Fully Corrected)
+========================================= */
+
 .special-sections-wrapper {
   position: relative;
   width: 100%;
@@ -102,4 +106,78 @@ p {
   font-size: 1.3rem;
   line-height: 1.6;
   color: #ccc;
-}/
+}
+
+/* RESPONSIVE DESIGN FOR MOBILE */
+@media (max-width: 768px) {
+  .special-sections-wrapper {
+    min-height: 200vh; /* Reduce height since content stacks vertically */
+  }
+
+  .main-content-grid {
+    flex-direction: column; /* Stack image and text vertically */
+  }
+
+  .image-sticky-side {
+    position: static; /* Remove sticky positioning */
+    height: auto;
+    order: -1; /* Put image first */
+  }
+
+  .image-box {
+    width: 90vw; /* Square: 90% of viewport width */
+    height: 90vw; /* Square aspect ratio */
+    max-width: 400px; /* Reasonable max size */
+    max-height: 400px;
+    margin: 0 auto 2rem; /* Center and add space below */
+  }
+
+  .text-scroll-side {
+    padding: 0 5%; /* Reduce padding on mobile */
+  }
+
+  .scroll-block {
+    height: auto; /* Allow natural height */
+    min-height: 50vh; /* Ensure some minimum height */
+    padding: 2rem 0; /* Add vertical padding */
+  }
+
+  .content-inner {
+    text-align: center; /* Center text on mobile */
+  }
+
+  h2 {
+    font-size: 2.5rem; /* Smaller heading on mobile */
+    margin: 1rem 0;
+  }
+
+  p {
+    font-size: 1.1rem; /* Smaller text on mobile */
+  }
+
+  .idx {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .image-box {
+    width: 95vw;
+    height: 95vw;
+    max-width: 350px;
+    max-height: 350px;
+  }
+
+  h2 {
+    font-size: 2rem;
+  }
+
+  p {
+    font-size: 1rem;
+  }
+  
+  /* FIXED: Moved safely inside the media query! */
+  .bg-anchor {
+    position: static;
+  }
+}
