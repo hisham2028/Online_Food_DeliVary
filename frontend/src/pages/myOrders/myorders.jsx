@@ -4,6 +4,8 @@ import { useStore } from '../../context/StoreContext';
 import axios from 'axios';
 import { assets } from '../../assets/assets';
 
+const formatTaka = (value) => `৳${Number(value ?? 0).toFixed(2)}`;
+
 const ORDER_STEPS = ['Food Processing', 'Preparing', 'Out for Delivery', 'Delivered'];
 
 const OrderTracker = ({ status }) => {
@@ -93,7 +95,7 @@ const MyOrders = () => {
                                         return item.name + " x " + item.quantity + ", ";
                                     }
                                 })}</p>
-                                <p>${order.amount}.00</p>
+                                <p>{formatTaka(order.amount)}</p>
                                 <p>Items: {order.items.length}</p>
                                 <p><span>&#x25cf;</span> <b>{order.status}</b></p>
                                 <button onClick={() => { fetchOrders(); toggleTracker(index); }}>

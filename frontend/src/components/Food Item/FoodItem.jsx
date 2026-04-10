@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import './Fooditem.css';
 import { useStore } from '../../context/StoreContext';
 
+const formatTaka = (value) => `৳${Number(value ?? 0).toFixed(2)}`;
+
 function FoodItem({ id, name, price, description, image }) {
     const { cartItems = {}, addToCart, removeFromCart } = useStore();
     const quantity = (cartItems && cartItems[id]) || 0;
@@ -51,7 +53,7 @@ function FoodItem({ id, name, price, description, image }) {
                 </div>
                 <p className='food-item-desc'>{description}</p>
                 <div className='food-item-bottom'>
-                    <p className='food-item-price'>${price}</p>
+                    <p className='food-item-price'>{formatTaka(price)}</p>
                 </div>
             </div>
         </div>

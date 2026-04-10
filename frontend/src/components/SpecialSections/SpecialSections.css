@@ -1,183 +1,147 @@
 /* =========================================
-   SpecialSections.css (Fully Corrected)
+   SpecialSections.css - Wheel Carousel
 ========================================= */
 
-.special-sections-wrapper {
+.special-sections-container {
   position: relative;
   width: 100%;
-  min-height: 300vh; /* Ensures there is enough room to scroll */
-  background: #000;
-  overflow: clip;
-}
-
-/* THE BACKGROUND FIX */
-.bg-anchor {
-  position: sticky;
-  top: 0;
-  left: 0;
-  width: 100%;
   height: 100vh;
-  z-index: 1;
+  background-color: #0a0a0a;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
+  font-family: 'Poppins', sans-serif;
 }
 
-.bg-layer {
-  position: absolute;
-  inset: 0;
-  background-size: cover;
-  background-position: center;
-  filter: blur(0px) brightness(0.3); /* High blur to make it look like a glow */
-  transform: scale(1.2); /* Hide edges */
+.content-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  align-items: center;
+  width: 100%;
+  max-width: 1400px;
+  height: 100%;
+  padding: 0 5%;
 }
 
-.bg-vignette {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle, transparent 20%, rgba(94, 80, 80, 0.8) 100%);
-  z-index: 2;
-}
-
-/* CONTENT LAYOUT */
-.main-content-grid {
+/* Left Side: Text Content */
+.text-content-pane {
   position: relative;
   display: flex;
-  z-index: 10;
-  margin-top: -100vh; /* Pulls content up over the sticky background */
+  flex-direction: column;
+  justify-content: center;
+  padding-right: 10%;
 }
 
-.image-sticky-side {
-  flex: 1;
-  height: 100vh;
-  position: sticky;
-  top: 0;
+.text-block {
+  position: absolute; /* Allows smooth cross-fade */
+  width: 100%;
+}
+
+.idx {
+  color: #ffc107;
+  font-family: monospace;
+  font-size: 1.2rem;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.text-block h2 {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+  color: #fff;
+}
+
+.text-block p {
+  font-size: 1.1rem;
+  color: #ccc;
+  line-height: 1.6;
+}
+
+/* Right Side: Image */
+.image-pane {
+  position: relative;
+  width: 100%;
+  height: 70vh; /* Control the image height */
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.image-box {
-  width: 85%;
-  height: 70%;
-  border-radius: 24px;
-  overflow: hidden;
-  box-shadow: 0 40px 100px rgba(102, 62, 62, 0.6);
-  border: 1px solid rgba(255,255,255,0.1);
-}
-
-.active-feature-img {
+.feature-image {
+  position: absolute;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 20px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
 
-.text-scroll-side {
-  flex: 1;
-}
-
-.scroll-block {
-  height: 100vh;
+/* Navigation Dots */
+.carousel-dots {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
-  align-items: center;
-  padding: 0 10%;
-  opacity: 0.15;
-  transition: all 0.6s ease;
+  gap: 12px;
+  z-index: 20;
 }
 
-.scroll-block.active {
-  opacity: 1;
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.3);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
 }
 
-.content-inner {
-  color: white;
+.dot.active {
+  background-color: #ffc107;
+  transform: scale(1.2);
 }
 
-.idx {
-  color: #ffcc00;
-  font-family: monospace;
-  font-size: 1.2rem;
-}
-
-h2 {
-  font-size: 4rem;
-  margin: 1rem 0;
-}
-
-p {
-  font-size: 1.3rem;
-  line-height: 1.6;
-  color: #ccc;
-}
-
-/* RESPONSIVE DESIGN FOR MOBILE */
-@media (max-width: 768px) {
-  .special-sections-wrapper {
-    min-height: 200vh; /* Reduce height since content stacks vertically */
+/* Responsive Design */
+@media (max-width: 992px) {
+  .content-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr; /* Text on top, image below */
+    text-align: center;
+    padding: 5% 8%;
   }
 
-  .main-content-grid {
-    flex-direction: column; /* Stack image and text vertically */
+  .text-content-pane {
+    padding-right: 0;
+    padding-bottom: 2rem;
+    align-items: center;
   }
 
-  .image-sticky-side {
-    position: static; /* Remove sticky positioning */
-    height: auto;
-    order: -1; /* Put image first */
+  .image-pane {
+    height: 50vh; /* Adjust image height for mobile */
   }
 
-  .image-box {
-    width: 90vw; /* Square: 90% of viewport width */
-    height: 90vw; /* Square aspect ratio */
-    max-width: 400px; /* Reasonable max size */
-    max-height: 400px;
-    margin: 0 auto 2rem; /* Center and add space below */
-  }
-
-  .text-scroll-side {
-    padding: 0 5%; /* Reduce padding on mobile */
-  }
-
-  .scroll-block {
-    height: auto; /* Allow natural height */
-    min-height: 50vh; /* Ensure some minimum height */
-    padding: 2rem 0; /* Add vertical padding */
-  }
-
-  .content-inner {
-    text-align: center; /* Center text on mobile */
-  }
-
-  h2 {
-    font-size: 2.5rem; /* Smaller heading on mobile */
-    margin: 1rem 0;
-  }
-
-  p {
-    font-size: 1.1rem; /* Smaller text on mobile */
-  }
-
-  .idx {
-    font-size: 1rem;
+  .text-block h2 {
+    font-size: 2.5rem;
   }
 }
 
-@media (max-width: 480px) {
-  .image-box {
-    width: 95vw;
-    height: 95vw;
-    max-width: 350px;
-    max-height: 350px;
-  }
-
-  h2 {
+@media (max-width: 576px) {
+  .text-block h2 {
     font-size: 2rem;
   }
 
-  p {
+  .text-block p {
     font-size: 1rem;
   }
-  
-  /* FIXED: Moved safely inside the media query! */
-  .bg-anchor {
-    position: static;
+
+  .image-pane {
+    height: 40vh;
   }
 }

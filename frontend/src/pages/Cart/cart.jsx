@@ -3,6 +3,8 @@ import './cart.css';
 import { useStore } from '../../context/StoreContext';
 import { useNavigate } from 'react-router-dom';
 
+const formatTaka = (value) => `৳${Number(value ?? 0).toFixed(2)}`;
+
 const Cart = () => {
   const { cartItems, food_list, removeFromCart, getTotalCartAmount, token } = useStore();
   const navigate = useNavigate();
@@ -59,9 +61,9 @@ const Cart = () => {
                     height={60}
                   />
                   <p>{item.name}</p>
-                  <p>${item.price}</p>
+                  <p>{formatTaka(item.price)}</p>
                   <p>{cartItems[item._id]}</p>
-                  <p>${item.price * cartItems[item._id]}</p>
+                  <p>{formatTaka(item.price * cartItems[item._id])}</p>
                   <p onClick={() => removeItemCompletely(item._id)} className='cross'>×</p>
                 </div>
                 <hr />
@@ -76,11 +78,11 @@ const Cart = () => {
         <div className="cart-total">
           <h2>Cart Totals</h2>
           <div>
-            <div className="cart-total-details"><p>Subtotal</p><p>${subtotal}</p></div>
+            <div className="cart-total-details"><p>Subtotal</p><p>{formatTaka(subtotal)}</p></div>
             <hr />
-            <div className="cart-total-details"><p>Delivery Fee</p><p>${subtotal === 0 ? 0 : deliveryFee}</p></div>
+            <div className="cart-total-details"><p>Delivery Fee</p><p>{formatTaka(subtotal === 0 ? 0 : deliveryFee)}</p></div>
             <hr />
-            <div className="cart-total-details"><b>Total</b><b>${subtotal === 0 ? 0 : total}</b></div>
+            <div className="cart-total-details"><b>Total</b><b>{formatTaka(subtotal === 0 ? 0 : total)}</b></div>
           </div>
           {checkoutMessage && <p className="cart-checkout-message">{checkoutMessage}</p>}
           <button onClick={handleProceedToCheckout}>PROCEED TO CHECKOUT</button>

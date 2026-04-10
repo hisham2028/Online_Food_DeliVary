@@ -122,7 +122,7 @@ const Add = () => {
           <div className="add-price flex-col">
             <p>Product Price</p>
             <input
-              type="number" name="price" placeholder="$20"
+              type="number" name="price" placeholder="৳20"
               value={formData.price} onChange={onFieldChange}
               min="0" step="0.01" required
             />
