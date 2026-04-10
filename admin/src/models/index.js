@@ -44,7 +44,7 @@ export class Order {
   }
 
   get shortId()         { return `#${this._id.slice(-6).toUpperCase()}`; }
-  get formattedAmount() { return `৳${this.amount.toFixed(2)} / $${this.amount.toFixed(2)}`; }
+  get formattedAmount() { return `৳${this.amount.toFixed(2)}`; }
   get formattedDate()   { return this.date ? this.date.toLocaleDateString() : '—'; }
   get itemSummary()     { return this.items.map(String).join(', '); }
   get statusClass()     { return this.status.toLowerCase().replace(/\s+/g, '-'); }
@@ -84,7 +84,7 @@ export class FoodItem {
     this.category    = raw.category;
     this.image       = raw.image;
   }
-  get formattedPrice() { return `৳${this.price.toFixed(2)} / $${this.price.toFixed(2)}`; }
+  get formattedPrice() { return `৳${this.price.toFixed(2)}`; }
 }
 
 // ─── DashboardStats ───────────────────────────────────────────────────────────
@@ -96,5 +96,5 @@ export class DashboardStats {
     this.outForDelivery  = orders.filter((o) => o.status === ORDER_STATUSES.OUT_FOR_DELIVERY).length;
     this.delivered       = orders.filter((o) => o.status === ORDER_STATUSES.DELIVERED).length;
   }
-  get formattedRevenue() { return `৳${this.totalRevenue.toFixed(2)} / $${this.totalRevenue.toFixed(2)}`; }
+  get formattedRevenue() { return `৳${this.totalRevenue.toFixed(2)}`; }
 }

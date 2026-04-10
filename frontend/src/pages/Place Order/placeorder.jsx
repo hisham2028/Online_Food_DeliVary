@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 
 const formatPrices = (value) => {
     const amount = Number(value ?? 0).toFixed(2);
-    return `৳${amount} / $${amount}`;
+    return `৳${amount}`;
 };
 
 const PlaceOrder = () => {

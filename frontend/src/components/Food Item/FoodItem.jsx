@@ -4,7 +4,7 @@ import { useStore } from '../../context/StoreContext';
 
 const formatPrices = (value) => {
     const amount = Number(value ?? 0).toFixed(2);
-    return `৳${amount} / $${amount}`;
+    return `৳${amount}`;
 };
 
 function FoodItem({ id, name, price, description, image }) {

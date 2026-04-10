@@ -6,7 +6,7 @@ import { assets } from '../../assets/assets';
 
 const formatPrices = (value) => {
     const amount = Number(value ?? 0).toFixed(2);
-    return `৳${amount} / $${amount}`;
+    return `৳${amount}`;
 };
 
 const ORDER_STEPS = ['Food Processing', 'Preparing', 'Out for Delivery', 'Delivered'];
