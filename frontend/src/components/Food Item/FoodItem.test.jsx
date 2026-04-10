@@ -38,7 +38,7 @@ describe('FoodItem Component', () => {
     // Assert
     expect(screen.getByText('Caesar Salad')).toBeInTheDocument();
     expect(screen.getByText('Fresh salad')).toBeInTheDocument();
-    expect(screen.getByText('৳12.00')).toBeInTheDocument();
+    expect(screen.getByText('৳12.00 / $12.00')).toBeInTheDocument();
   });
 
   test('displays add button when item not in cart', () => {

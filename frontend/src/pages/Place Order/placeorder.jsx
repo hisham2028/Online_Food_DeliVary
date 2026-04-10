@@ -5,7 +5,10 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-const formatTaka = (value) => `৳${Number(value ?? 0).toFixed(2)}`;
+const formatPrices = (value) => {
+    const amount = Number(value ?? 0).toFixed(2);
+    return `৳${amount} / $${amount}`;
+};
 
 const PlaceOrder = () => {
     const { getTotalCartAmount, token, food_list, cartItems, url } = useStore();
@@ -117,11 +120,11 @@ const PlaceOrder = () => {
                 <div className="cart-total">
                     <h2>Cart Totals</h2>
                     <div>
-                        <div className="cart-total-details"><p>Subtotal</p><p>{formatTaka(getTotalCartAmount())}</p></div>
+                        <div className="cart-total-details"><p>Subtotal</p><p>{formatPrices(getTotalCartAmount())}</p></div>
                         <hr />
-                        <div className="cart-total-details"><p>Delivery Fee</p><p>{formatTaka(getTotalCartAmount() === 0 ? 0 : 2)}</p></div>
+                        <div className="cart-total-details"><p>Delivery Fee</p><p>{formatPrices(getTotalCartAmount() === 0 ? 0 : 2)}</p></div>
                         <hr />
-                        <div className="cart-total-details"><b>Total</b><b>{formatTaka(getTotalCartAmount() === 0 ? 0 : getTotalCartAmount() + 2)}</b></div>
+                        <div className="cart-total-details"><b>Total</b><b>{formatPrices(getTotalCartAmount() === 0 ? 0 : getTotalCartAmount() + 2)}</b></div>
                     </div>
                     
                     <div className="payment-methods">
