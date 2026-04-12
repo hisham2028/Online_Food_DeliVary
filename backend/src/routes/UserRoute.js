@@ -24,6 +24,8 @@ class UserRoute {
   initializeRoutes() {
     this.router.post("/register", this.authLimiter, this.controller.register);
     this.router.post("/login", this.authLimiter, this.controller.login);
+    this.router.get("/verify/:token", this.controller.verifyEmail);
+    this.router.post("/resend-verification", this.authLimiter, this.controller.resendVerification);
     this.router.get("/profile", this.authMiddleware.authenticate, this.controller.getUserProfile);
     this.router.put("/profile", this.authMiddleware.authenticate, this.controller.updateProfile);
   }

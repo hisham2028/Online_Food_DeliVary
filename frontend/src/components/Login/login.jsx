@@ -72,7 +72,8 @@ const Login = ({ setShowLogin }) => {
       }
     } catch (error) {
       console.error("Auth Error:", error);
-      toast.error("Something went wrong. Check your connection.");
+      const message = error?.response?.data?.message || "Something went wrong. Check your connection.";
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
