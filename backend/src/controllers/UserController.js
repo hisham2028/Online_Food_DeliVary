@@ -16,6 +16,21 @@ class UserController {
 
   validatePassword = (password) => password && password.length >= 8;
 
+  issueVerificationForUser = async (user) => {
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const hashedVerificationToken = crypto.createHash('sha256').update(verificationToken).digest('hex');
+    const verificationTokenExpire = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+    await this.userModel.updateById(user._id, {
+      isVerified: false,
+      verificationToken: hashedVerificationToken,
+      verificationTokenExpire,
+    });
+
+    const verificationUrl = `${process.env.BACKEND_URL || 'http://localhost:4000'}/api/user/verify-email/${verificationToken}`;
+    await this.emailService.sendVerificationEmail(user.email, verificationUrl);
+  }
+
   login = async (req, res) => {
     try {
       const { email, password } = req.body;
@@ -35,9 +50,15 @@ class UserController {
       }
 
       if (!user.isVerified) {
+        try {
+          await this.issueVerificationForUser(user);
+        } catch (error) {
+          console.error('RESEND VERIFICATION ON LOGIN ERROR:', error);
+        }
+
         return res.status(403).json({
           success: false,
-          message: "Please verify your email before logging in. Check your inbox for the verification link."
+          message: "Please verify your email before logging in. A new verification link has been sent to your inbox."
         });
       }
 
@@ -68,6 +89,14 @@ class UserController {
       const normalizedEmail = this.normalizeEmail(email);
       const existingUser = await this.userModel.findByEmail(normalizedEmail);
       if (existingUser) {
+        if (!existingUser.isVerified) {
+          await this.issueVerificationForUser(existingUser);
+          return res.json({
+            success: true,
+            message: "Account already exists but is not verified. A new verification email has been sent."
+          });
+        }
+
         return res.status(409).json({ success: false, message: "User Already Exists" });
       }
       const salt = await bcrypt.genSalt(10);
@@ -85,9 +114,8 @@ class UserController {
         verificationTokenExpire
       });
 
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
       const verificationUrl = `${process.env.BACKEND_URL || 'http://localhost:4000'}/api/user/verify-email/${verificationToken}`;
-      await this.emailService.sendVerificationEmail(normalizedEmail, verificationUrl, frontendUrl);
+      await this.emailService.sendVerificationEmail(normalizedEmail, verificationUrl);
 
       res.json({
         success: true,
