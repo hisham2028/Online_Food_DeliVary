@@ -26,6 +26,7 @@ class UserRoute {
     this.router.post("/login", this.authLimiter, this.controller.login);
     this.router.get("/verify-email/:token", this.controller.verifyEmail);
     this.router.post("/forgot-password", this.authLimiter, this.controller.forgotPassword);
+    this.router.post("/verify-reset-code", this.authLimiter, this.controller.verifyResetCode);
     this.router.post("/reset-password", this.authLimiter, this.controller.resetPassword);
     this.router.put("/change-password", this.authLimiter, this.authMiddleware.authenticate, this.controller.changePassword);
     this.router.get("/profile", this.authMiddleware.authenticate, this.controller.getUserProfile);

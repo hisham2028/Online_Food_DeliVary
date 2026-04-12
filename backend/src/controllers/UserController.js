@@ -210,8 +210,8 @@ class UserController {
         return res.status(404).json({ success: false, message: "No account found for this email" });
       }
 
-      const resetToken = crypto.randomBytes(32).toString('hex');
-      const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+      const resetCode = String(Math.floor(100000 + Math.random() * 900000));
+      const hashedToken = crypto.createHash('sha256').update(resetCode).digest('hex');
       const resetPasswordExpire = new Date(Date.now() + 60 * 60 * 1000);
 
       await this.userModel.updateById(user._id, {
@@ -219,12 +219,11 @@ class UserController {
         resetPasswordExpire,
       });
 
-      const resetUrl = `${this.getFrontendUrl()}/reset-password?token=${resetToken}&email=${encodeURIComponent(normalizedEmail)}`;
-      await this.emailService.sendPasswordResetEmail(normalizedEmail, resetUrl);
+      await this.emailService.sendPasswordResetEmail(normalizedEmail, resetCode);
 
       return res.json({
         success: true,
-        message: 'Password reset link has been sent to your email address.'
+        message: 'Verification code has been sent to your email address.'
       });
     } catch (error) {
       console.error('FORGOT PASSWORD ERROR:', error);
@@ -232,11 +231,43 @@ class UserController {
     }
   }
 
+  verifyResetCode = async (req, res) => {
+    try {
+      const { email, code } = req.body;
+
+      if (!email || !code) {
+        return res.status(400).json({ success: false, message: 'Email and code are required' });
+      }
+
+      if (!validator.isEmail(email)) {
+        return res.status(400).json({ success: false, message: 'Please provide a valid email' });
+      }
+
+      const normalizedEmail = this.normalizeEmail(email);
+      const hashedCode = crypto.createHash('sha256').update(String(code).trim()).digest('hex');
+
+      const user = await this.userModel.getModel().findOne({
+        email: normalizedEmail,
+        resetPasswordToken: hashedCode,
+        resetPasswordExpire: { $gt: Date.now() }
+      });
+
+      if (!user) {
+        return res.status(400).json({ success: false, message: 'Verification code is invalid or expired' });
+      }
+
+      return res.json({ success: true, message: 'Code verified successfully' });
+    } catch (error) {
+      console.error('VERIFY RESET CODE ERROR:', error);
+      res.status(500).json({ success: false, message: 'Server Error' });
+    }
+  }
+
   resetPassword = async (req, res) => {
     try {
-      const { email, token, password, confirmPassword } = req.body;
+      const { email, code, password, confirmPassword } = req.body;
 
-      if (!email || !token || !password || !confirmPassword) {
+      if (!email || !code || !password || !confirmPassword) {
         return res.status(400).json({ success: false, message: 'Please provide all required fields' });
       }
 
@@ -253,7 +284,7 @@ class UserController {
       }
 
       const normalizedEmail = this.normalizeEmail(email);
-      const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+      const hashedToken = crypto.createHash('sha256').update(String(code).trim()).digest('hex');
       const user = await this.userModel.getModel().findOne({
         email: normalizedEmail,
         resetPasswordToken: hashedToken,

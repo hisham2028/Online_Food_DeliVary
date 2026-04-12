@@ -119,19 +119,15 @@ class EmailService {
     return await this.sendEmail(userEmail, subject, text, html);
   }
 
-  async sendPasswordResetEmail(userEmail, resetUrl) {
-    const subject = 'Reset Your Password';
-    const text = `Reset your password using this link: ${resetUrl}`;
+  async sendPasswordResetEmail(userEmail, resetCode) {
+    const subject = 'Password Recovery Verification Code';
+    const text = `Your password reset verification code is: ${resetCode}`;
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #ff6b35;">Reset Your Password</h2>
-        <p>We received a request to reset your password. Use the button below to continue.</p>
-        <a href="${resetUrl}"
-           style="display: inline-block; background: #ff6b35; color: white;
-                  padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0;">
-          Reset Password
-        </a>
-        <p>This link expires in 1 hour.</p>
+        <p>Use this verification code to continue resetting your password:</p>
+        <p style="font-size: 28px; font-weight: 700; letter-spacing: 6px; margin: 18px 0; color: #111827;">${resetCode}</p>
+        <p>This code expires in 1 hour.</p>
         <p>If you didn't request this change, you can ignore this email.</p>
       </div>
     `;
