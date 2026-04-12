@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './list.css';
 import { toast } from 'react-toastify';
 import { useServices } from '../../App';
@@ -63,6 +64,7 @@ const LoadingState = () => <p className="state-msg">Loading…</p>;
 
 // ─── List ──────────────────────────────────────────────────────────────────────
 const List = () => {
+  const navigate = useNavigate();
   const { foodRepo } = useServices();
   const [items,     setItems]     = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -132,7 +134,12 @@ const List = () => {
 
   return (
     <div className="list flex-col">
-      <p className="list-title">All Food Items</p>
+      <div className="list-header-row">
+        <p className="list-title">All Food Items</p>
+        <button className="list-add-btn" onClick={() => navigate('/add')}>
+          Add Item
+        </button>
+      </div>
       <div className="list-table">
         <div className="list-table-format list-header">
           <b>Image</b>

@@ -3,31 +3,87 @@ import nodemailer from 'nodemailer';
 class EmailService {
   constructor() {}
 
+  getSenderEmail() {
+    return process.env.EMAIL_FROM || process.env.EMAIL_USER;
+  }
+
+  useBrevoApi() {
+    return Boolean(process.env.BREVO_API_KEY);
+  }
+
+  async sendEmailWithBrevoApi(to, subject, text, html = null) {
+    const sender = this.getSenderEmail();
+
+    if (!sender) {
+      throw new Error('Email sender is not configured. Set EMAIL_FROM or EMAIL_USER in the backend environment.');
+    }
+
+    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'api-key': process.env.BREVO_API_KEY,
+      },
+      body: JSON.stringify({
+        sender: {
+          email: sender,
+          name: process.env.EMAIL_FROM_NAME || 'Crave Yard'
+        },
+        to: [{ email: to }],
+        subject,
+        textContent: text,
+        htmlContent: html || text,
+      }),
+    });
+
+    if (!response.ok) {
+      const raw = await response.text();
+      throw new Error(`Brevo API failed (${response.status}): ${raw}`);
+    }
+
+    return await response.json();
+  }
+
+  async sendEmailWithSmtp(to, subject, text, html = null) {
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
+      throw new Error('SMTP email is not configured. Set EMAIL_USER and EMAIL_PASSWORD in the backend environment.');
+    }
+
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST || 'smtp.gmail.com',
+      port: process.env.SMTP_PORT || 587,
+      secure: false,
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 10000,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+
+    const mailOptions = { from: this.getSenderEmail(), to, subject, text, html };
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Email sent via SMTP: ' + info.messageId);
+    return info;
+  }
+
   async sendEmail(to, subject, text, html = null) {
     try {
-      if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
-        throw new Error('Email is not configured. Set EMAIL_USER and EMAIL_PASSWORD in the backend environment.');
+      if (this.useBrevoApi()) {
+        const info = await this.sendEmailWithBrevoApi(to, subject, text, html);
+        console.log('Email sent via Brevo API:', info?.messageId || 'ok');
+        return info;
       }
 
-      const transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST || 'smtp.gmail.com',
-        port: process.env.SMTP_PORT || 587,
-        secure: false,
-        connectionTimeout: 10000,
-        greetingTimeout: 10000,
-        socketTimeout: 10000,
-        auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASSWORD,
-        },
-      });
-
-      const mailOptions = { from: process.env.EMAIL_USER, to, subject, text, html };
-      const info = await transporter.sendMail(mailOptions);
-      console.log('Email sent: ' + info.messageId);
-      return info;
+      return await this.sendEmailWithSmtp(to, subject, text, html);
     } catch (error) {
       console.error('Error sending email:', error);
+
+      if (error?.code === 'ETIMEDOUT') {
+        throw new Error('SMTP connection timeout. If you use Brevo, set BREVO_API_KEY to send via HTTPS API and avoid SMTP network timeouts.');
+      }
+
       throw error;
     }
   }
