@@ -16,6 +16,12 @@ class UserController {
 
   validatePassword = (password) => password && password.length >= 8;
 
+  normalizeBaseUrl = (value, fallback) => (value || fallback).replace(/\/+$/, '');
+
+  getFrontendUrl = () => this.normalizeBaseUrl(process.env.FRONTEND_URL, 'http://localhost:5173');
+
+  getBackendUrl = () => this.normalizeBaseUrl(process.env.BACKEND_URL, 'http://localhost:4000');
+
   issueVerificationForUser = async (user) => {
     const verificationToken = crypto.randomBytes(32).toString('hex');
     const hashedVerificationToken = crypto.createHash('sha256').update(verificationToken).digest('hex');
@@ -27,7 +33,7 @@ class UserController {
       verificationTokenExpire,
     });
 
-    const verificationUrl = `${process.env.BACKEND_URL || 'http://localhost:4000'}/api/user/verify-email/${verificationToken}`;
+    const verificationUrl = `${this.getBackendUrl()}/api/user/verify-email/${verificationToken}`;
     await this.emailService.sendVerificationEmail(user.email, verificationUrl);
   }
 
@@ -114,7 +120,7 @@ class UserController {
         verificationTokenExpire
       });
 
-      const verificationUrl = `${process.env.BACKEND_URL || 'http://localhost:4000'}/api/user/verify-email/${verificationToken}`;
+      const verificationUrl = `${this.getBackendUrl()}/api/user/verify-email/${verificationToken}`;
       await this.emailService.sendVerificationEmail(normalizedEmail, verificationUrl);
 
       res.json({
@@ -183,8 +189,7 @@ class UserController {
         verificationTokenExpire: undefined,
       });
 
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-      return res.redirect(`${frontendUrl}/?verified=true`);
+      return res.redirect(`${this.getFrontendUrl()}/?verified=true`);
     } catch (error) {
       console.error('VERIFY EMAIL ERROR:', error);
       res.status(500).json({ success: false, message: 'Server Error' });
@@ -214,8 +219,7 @@ class UserController {
         resetPasswordExpire,
       });
 
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-      const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}&email=${encodeURIComponent(normalizedEmail)}`;
+      const resetUrl = `${this.getFrontendUrl()}/reset-password?token=${resetToken}&email=${encodeURIComponent(normalizedEmail)}`;
       await this.emailService.sendPasswordResetEmail(normalizedEmail, resetUrl);
 
       return res.json({
