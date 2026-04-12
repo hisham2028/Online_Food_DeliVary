@@ -9,8 +9,9 @@ const ResetPassword = () => {
   const { url } = useStore();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const token = searchParams.get('token') || '';
-  const emailFromQuery = searchParams.get('email') || '';
+  const token = (searchParams.get('token') || '').trim();
+  const emailFromQuery = (searchParams.get('email') || '').trim();
+  const hasToken = token.length > 0;
   const [form, setForm] = useState({ email: emailFromQuery, password: '', confirmPassword: '' });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -21,6 +22,16 @@ const ResetPassword = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    if (!hasToken) {
+      toast.error('Reset link is invalid or missing token. Please request a new one.');
+      return;
+    }
+
+    if (!form.email.trim()) {
+      toast.error('Email is required.');
+      return;
+    }
 
     if (form.password.length < 8) {
       toast.error('Password must be at least 8 characters.');
@@ -36,7 +47,7 @@ const ResetPassword = () => {
 
     try {
       const response = await axios.post(`${url}/api/user/reset-password`, {
-        email: form.email,
+        email: form.email.trim(),
         token,
         password: form.password,
         confirmPassword: form.confirmPassword,
@@ -63,6 +74,12 @@ const ResetPassword = () => {
         <h1>Reset Password</h1>
         <p className="auth-copy">Create a new password for your account. It must be at least 8 characters long.</p>
 
+        {!hasToken && (
+          <div className="auth-alert auth-alert-error">
+            This reset link is invalid or expired. Please request a new reset link.
+          </div>
+        )}
+
         <label htmlFor="reset-email">Email address</label>
         <input
           id="reset-email"
@@ -72,6 +89,7 @@ const ResetPassword = () => {
           onChange={onChange}
           placeholder="you@example.com"
           required
+          disabled={isLoading}
         />
 
         <label htmlFor="reset-password">New password</label>
@@ -83,6 +101,7 @@ const ResetPassword = () => {
           onChange={onChange}
           minLength={8}
           required
+          disabled={isLoading || !hasToken}
         />
 
         <label htmlFor="reset-confirm-password">Confirm password</label>
@@ -94,10 +113,15 @@ const ResetPassword = () => {
           onChange={onChange}
           minLength={8}
           required
+          disabled={isLoading || !hasToken}
         />
 
         <button type="submit" disabled={isLoading || !token}>
           {isLoading ? 'Updating...' : 'Change password'}
+        </button>
+
+        <button type="button" className="auth-link-button" onClick={() => navigate('/forgot-password')}>
+          Request a new reset link
         </button>
 
         <button type="button" className="auth-link-button" onClick={() => navigate('/')}>

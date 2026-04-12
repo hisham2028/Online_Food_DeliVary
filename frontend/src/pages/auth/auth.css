@@ -45,6 +45,19 @@
   font-size: 14px;
 }
 
+.auth-alert {
+  border-radius: 12px;
+  padding: 11px 13px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.auth-alert-error {
+  border: 1px solid #fecaca;
+  background: #fff1f2;
+  color: #b91c1c;
+}
+
 .auth-card label {
   font-size: 13px;
   font-weight: 700;
