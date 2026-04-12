@@ -18,6 +18,8 @@ const PlaceOrder = lazy(() => import("./pages/Place Order/placeorder"));
 const Verify     = lazy(() => import("./pages/verify/verify"));
 const MyOrders   = lazy(() => import("./pages/myOrders/myorders"));
 const Menu       = lazy(() => import("./pages/Menu/menu"));
+const ForgotPassword = lazy(() => import("./pages/auth/ForgotPassword"));
+const ResetPassword = lazy(() => import("./pages/auth/ResetPassword"));
 
 // ── Fade-only transition — no x-slide to prevent horizontal layout shift ──
 const PageTransition = ({ children }) => (
@@ -88,6 +90,14 @@ const App = () => {
 
               <Route path="/menu" element={
                 <PageTransition><Menu /></PageTransition>
+              } />
+
+              <Route path="/forgot-password" element={
+                <PageTransition><ForgotPassword /></PageTransition>
+              } />
+
+              <Route path="/reset-password" element={
+                <PageTransition><ResetPassword /></PageTransition>
               } />
 
             </Routes>

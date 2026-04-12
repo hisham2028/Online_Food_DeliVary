@@ -32,6 +32,13 @@ class FoodRepository {
     if (!data.success) throw new Error(data.message ?? 'Failed to remove food item');
     return data;
   }
+
+  /** Update selected food fields by id. */
+  async update(foodId, payload) {
+    const data = await this.#api.put(`/api/food/update/${foodId}`, payload);
+    if (!data.success) throw new Error(data.message ?? 'Failed to update food item');
+    return data;
+  }
 }
 
 export default FoodRepository;

@@ -30,6 +30,13 @@ const AdminSettings = () => {
       return;
     }
 
+    if (form.newPassword.trim().length < 8) {
+      const message = 'New password must be at least 8 characters.';
+      setInlineMessage({ type: 'error', text: message });
+      toast.error(message);
+      return;
+    }
+
     const result = updateAdminCredentials({
       currentUsername: form.currentUsername,
       currentPassword: form.currentPassword,
@@ -92,6 +99,7 @@ const AdminSettings = () => {
             type="password"
             value={form.newPassword}
             onChange={onChange}
+            minLength={8}
             required
           />
 

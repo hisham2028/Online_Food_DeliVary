@@ -65,6 +65,10 @@ export const updateAdminCredentials = ({ currentUsername, currentPassword, newUs
     return { success: false, message: 'New username and password are required.' };
   }
 
+  if (newPassword.trim().length < 8) {
+    return { success: false, message: 'New password must be at least 8 characters.' };
+  }
+
   const nextCredentials = {
     username: newUsername.trim(),
     password: newPassword.trim(),

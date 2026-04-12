@@ -49,6 +49,12 @@ const Login = ({ setShowLogin }) => {
 
   const onLogin = async (event) => {
     event.preventDefault();
+
+    if (data.password.trim().length < 8) {
+      toast.error('Password must be at least 8 characters.');
+      return;
+    }
+
     setIsLoading(true);
     
     let newUrl = url;
@@ -127,8 +133,22 @@ const Login = ({ setShowLogin }) => {
             value={data.password} 
             type="password" 
             placeholder="Password" 
+            minLength={8}
             required 
           />
+        </div>
+
+        <div className="forgot-password-link">
+          <span
+            onClick={() => {
+              if (!isBusy) {
+                setShowLogin(false);
+                navigate('/forgot-password');
+              }
+            }}
+          >
+            Forgot password?
+          </span>
         </div>
 
         <button type="submit" className="login-btn" disabled={isBusy}>

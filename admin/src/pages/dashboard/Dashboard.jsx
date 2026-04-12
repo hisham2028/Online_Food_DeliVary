@@ -14,7 +14,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import './dashboard.css';
 import { toast } from 'react-toastify';
 import { useServices } from '../../App';
-import { Order, DashboardStats } from '../../models';
+import { Order, DashboardStats, FoodItem } from '../../models';
 import { OrderFilterContext } from '../../strategies/OrderFilterStrategy';
 import EventBus, { EVENTS } from '../../events/EventBus';
 
@@ -80,12 +80,53 @@ const OrdersTable = ({ orders }) => (
   </div>
 );
 
+const EditableFoodRow = ({ item, onSave, isSaving }) => {
+  const [name, setName] = useState(item.name);
+  const [price, setPrice] = useState(String(item.price));
+
+  useEffect(() => {
+    setName(item.name);
+    setPrice(String(item.price));
+  }, [item.name, item.price]);
+
+  return (
+    <div className="food-quick-row">
+      <span className="food-quick-id">{item._id.slice(-6).toUpperCase()}</span>
+      <input
+        className="food-quick-input"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        aria-label={`Edit name for ${item.name}`}
+      />
+      <input
+        className="food-quick-input"
+        type="number"
+        step="0.01"
+        min="0"
+        value={price}
+        onChange={(e) => setPrice(e.target.value)}
+        aria-label={`Edit price for ${item.name}`}
+      />
+      <button
+        className="food-quick-save"
+        onClick={() => onSave(item._id, name, price)}
+        disabled={isSaving}
+      >
+        {isSaving ? 'Saving...' : 'Save'}
+      </button>
+    </div>
+  );
+};
+
 // ─── Dashboard ─────────────────────────────────────────────────────────────────
 const Dashboard = () => {
-  const { orderRepo } = useServices();
+  const { orderRepo, foodRepo } = useServices();
   const [allOrders,    setAllOrders]    = useState([]);
+  const [foods,        setFoods]        = useState([]);
   const [activeFilter, setActiveFilter] = useState('all');
   const [isLoading,    setIsLoading]    = useState(true);
+  const [isFoodLoading, setIsFoodLoading] = useState(true);
+  const [savingFoodId, setSavingFoodId] = useState('');
 
   const fetchOrders = useCallback(async () => {
     setIsLoading(true);
@@ -99,13 +140,62 @@ const Dashboard = () => {
     }
   }, [orderRepo]);
 
+  const fetchFoods = useCallback(async () => {
+    setIsFoodLoading(true);
+    try {
+      const raw = await foodRepo.getAll();
+      setFoods(raw.map((r) => new FoodItem(r)).slice(0, 8));
+    } catch (err) {
+      toast.error(err.message);
+    } finally {
+      setIsFoodLoading(false);
+    }
+  }, [foodRepo]);
+
   useEffect(() => { fetchOrders(); }, [fetchOrders]);
+  useEffect(() => { fetchFoods(); }, [fetchFoods]);
 
   // Observer: refresh when an order status changes on the Orders page
   useEffect(() => {
     const unsub = EventBus.on(EVENTS.ORDER_STATUS_CHANGED, fetchOrders);
     return unsub;
   }, [fetchOrders]);
+
+  useEffect(() => {
+    const unsubs = [
+      EventBus.on(EVENTS.FOOD_ADDED, fetchFoods),
+      EventBus.on(EVENTS.FOOD_REMOVED, fetchFoods),
+      EventBus.on(EVENTS.FOOD_UPDATED, fetchFoods),
+    ];
+    return () => unsubs.forEach((u) => u());
+  }, [fetchFoods]);
+
+  const handleFoodSave = async (foodId, name, price) => {
+    const cleanName = name.trim();
+    const parsedPrice = Number(price);
+
+    if (!cleanName) {
+      toast.error('Name is required.');
+      return;
+    }
+    if (!Number.isFinite(parsedPrice) || parsedPrice < 0) {
+      toast.error('Price must be a valid non-negative number.');
+      return;
+    }
+
+    setSavingFoodId(foodId);
+    try {
+      const result = await foodRepo.update(foodId, { name: cleanName, price: parsedPrice });
+      const updated = new FoodItem(result.data);
+      setFoods((prev) => prev.map((item) => (item._id === foodId ? updated : item)));
+      toast.success(result.message ?? 'Item updated.');
+      EventBus.emit(EVENTS.FOOD_UPDATED, { foodId });
+    } catch (err) {
+      toast.error(err.message);
+    } finally {
+      setSavingFoodId('');
+    }
+  };
 
   // Strategy pattern: apply selected filter, then compute stats
   const filtered = OrderFilterContext.filter(allOrders, activeFilter);
@@ -137,6 +227,32 @@ const Dashboard = () => {
           <div className="recent-orders">
             <h3>Recent Orders ({filtered.length})</h3>
             <OrdersTable orders={filtered} />
+          </div>
+
+          <div className="quick-food-edit">
+            <h3>Quick Food Edit (Name & Price)</h3>
+            {isFoodLoading ? (
+              <p className="table-empty">Loading food items...</p>
+            ) : foods.length === 0 ? (
+              <p className="table-empty">No food items available.</p>
+            ) : (
+              <>
+                <div className="food-quick-row food-quick-header">
+                  <span>ID</span>
+                  <span>Name</span>
+                  <span>Price</span>
+                  <span>Action</span>
+                </div>
+                {foods.map((item) => (
+                  <EditableFoodRow
+                    key={item._id}
+                    item={item}
+                    onSave={handleFoodSave}
+                    isSaving={savingFoodId === item._id}
+                  />
+                ))}
+              </>
+            )}
           </div>
         </>
       )}

@@ -24,6 +24,7 @@ class EventBus {
 export const EVENTS = {
   FOOD_ADDED:            'food:added',
   FOOD_REMOVED:          'food:removed',
+  FOOD_UPDATED:          'food:updated',
   ORDER_STATUS_CHANGED:  'order:statusChanged',
   SIDEBAR_TOGGLE:        'sidebar:toggle',
 };

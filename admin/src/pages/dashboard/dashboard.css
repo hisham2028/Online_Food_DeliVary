@@ -158,6 +158,87 @@
   font-size: 13px;
 }
 
+.quick-food-edit {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.quick-food-edit h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+  padding: 16px 20px;
+  margin: 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.food-quick-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 120px 100px;
+  gap: 8px;
+  align-items: center;
+  padding: 12px 20px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.food-quick-row:last-child {
+  border-bottom: none;
+}
+
+.food-quick-header {
+  background: #f9fafb;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.food-quick-id {
+  font-family: monospace;
+  font-weight: 600;
+  color: #111827;
+}
+
+.food-quick-input {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 13px;
+  color: #111827;
+  background: #fff;
+}
+
+.food-quick-input:focus {
+  outline: none;
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18);
+}
+
+.food-quick-save {
+  border: 1px solid #f59e0b;
+  background: #f59e0b;
+  color: #fff;
+  border-radius: 6px;
+  padding: 7px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.food-quick-save:hover {
+  background: #d97706;
+  border-color: #d97706;
+}
+
+.food-quick-save:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .state-msg {
   text-align: center;
   padding: 40px;

@@ -13,6 +13,12 @@ const AdminLogin = ({ onLoginSuccess }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+
+    if (form.password.trim().length < 8) {
+      setError('Password must be at least 8 characters.');
+      return;
+    }
+
     const isValid = loginAdmin(form.username, form.password);
 
     if (!isValid) {
@@ -47,6 +53,7 @@ const AdminLogin = ({ onLoginSuccess }) => {
           type="password"
           value={form.password}
           onChange={onChange}
+          minLength={8}
           required
         />
 

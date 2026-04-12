@@ -37,7 +37,13 @@ class UserModel {
     if (typeof email !== "string") {
       return null;
     }
-    return await this.model.findOne({ email: { $eq: email } });
+
+    const normalizedEmail = email.trim();
+    const escapedEmail = normalizedEmail.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+    return await this.model.findOne({
+      email: { $regex: new RegExp(`^${escapedEmail}$`, 'i') }
+    });
   }
 
   async findByVerificationToken(token) {

@@ -55,6 +55,11 @@ class ApiService {
     return res.data;
   }
 
+  async put(endpoint, payload) {
+    const res = await this.#client.put(endpoint, payload);
+    return res.data;
+  }
+
   async postForm(endpoint, formData) {
     const res = await this.#client.post(endpoint, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
