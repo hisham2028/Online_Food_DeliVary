@@ -13,15 +13,19 @@ const StoreContextProvider = ({ children }) => {
   const [token, setToken] = useState("");
   const [food_list, setFoodlist] = useState([]); // always array
   const [cartItems, setCartItems] = useState({}); // always object
+  const [loading, setLoading] = useState(true);
 
   // ================= FETCH FOOD LIST =================
   const fetchFoodlist = async () => {
+    setLoading(true);
     try {
       const response = await axios.get(`${url}/api/food/list`);
       setFoodlist(response.data?.data || []);
     } catch (error) {
       console.error("Error fetching food list:", error);
       setFoodlist([]);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -133,6 +137,7 @@ const StoreContextProvider = ({ children }) => {
     () => ({
       food_list,
       cartItems,
+      loading,
       addToCart,
       removeFromCart,
       getTotalCartAmount,
@@ -141,7 +146,7 @@ const StoreContextProvider = ({ children }) => {
       token,
       setToken,
     }),
-    [food_list, cartItems, token]
+    [food_list, cartItems, loading, token]
   );
 
   return (

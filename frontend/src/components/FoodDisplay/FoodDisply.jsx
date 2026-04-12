@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const FoodDisplay = ({ category }) => {
   const { food_list, loading } = useStore();
+  const skeletonItems = Array.from({ length: 8 }, (_, index) => index);
 
   // For home page (category "All"), show top selling items (sorted by price descending, limited to 8)
   const displayItems = category === "All" 
@@ -35,9 +36,18 @@ const FoodDisplay = ({ category }) => {
       <h2>Top Selling Items</h2>
       
       {loading ? (
-        <div className="food-display-loading">
-          <div className="spinner"></div>
-          <p>Loading delicious food...</p>
+        <div className="food-display-skeleton" aria-busy="true" aria-live="polite">
+          {skeletonItems.map((index) => (
+            <div className="food-display-skeleton-card" key={index}>
+              <div className="food-display-skeleton-image shimmer" />
+              <div className="food-display-skeleton-content">
+                <div className="food-display-skeleton-line shimmer short" />
+                <div className="food-display-skeleton-line shimmer" />
+                <div className="food-display-skeleton-line shimmer medium" />
+                <div className="food-display-skeleton-line shimmer price" />
+              </div>
+            </div>
+          ))}
         </div>
       ) : displayItems.length === 0 ? (
         <div className="food-display-empty">

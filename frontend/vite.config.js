@@ -4,6 +4,12 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
 
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './src/setupTests.js',
+  },
+
   build: {
     // Raise the warning threshold so you only hear about truly large chunks
     chunkSizeWarningLimit: 600,
