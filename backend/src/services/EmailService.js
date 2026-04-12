@@ -5,10 +5,17 @@ class EmailService {
 
   async sendEmail(to, subject, text, html = null) {
     try {
+      if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
+        throw new Error('Email is not configured. Set EMAIL_USER and EMAIL_PASSWORD in the backend environment.');
+      }
+
       const transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST || 'smtp.gmail.com',
         port: process.env.SMTP_PORT || 587,
         secure: false,
+        connectionTimeout: 10000,
+        greetingTimeout: 10000,
+        socketTimeout: 10000,
         auth: {
           user: process.env.EMAIL_USER,
           pass: process.env.EMAIL_PASSWORD,
@@ -26,8 +33,7 @@ class EmailService {
   }
 
   // ✅ New — verification email
-  async sendVerificationEmail(userEmail, verificationToken) {
-    const verificationUrl = `${process.env.BACKEND_URL}/api/user/verify-email/${verificationToken}`;
+  async sendVerificationEmail(userEmail, verificationUrl) {
     const subject = 'Verify Your Email Address';
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">

@@ -50,7 +50,7 @@ const PageLoader = () => (
 const App = () => {
   const location = useLocation();
   const [showLogin, setShowLogin] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(location.pathname === '/');
 
   return (
     <>
