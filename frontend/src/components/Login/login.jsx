@@ -5,11 +5,9 @@ import './login.css';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useStore } from '../../context/StoreContext';
-import { useNavigate } from 'react-router-dom';
 
 const Login = ({ setShowLogin }) => {
   const { url, setToken } = useStore();
-  const navigate = useNavigate();
   
   const [currState, setCurrState] = useState("Login");
   const [isLoading, setIsLoading] = useState(false);
@@ -32,7 +30,7 @@ const Login = ({ setShowLogin }) => {
     setTimeout(() => {
       setShowSuccessPopup(false);
       setShowLogin(false);
-      navigate('/');
+      // Removed forced navigation to home
     }, 1200);
   };
 
@@ -93,7 +91,7 @@ const Login = ({ setShowLogin }) => {
           <div className="login-success-box">
             <div className="success-checkmark">✓</div>
             <h3>{successMessage}</h3>
-            <p>Redirecting to home...</p>
+            <p>Signing you in...</p>
           </div>
         </div>
       )}
@@ -143,7 +141,7 @@ const Login = ({ setShowLogin }) => {
             onClick={() => {
               if (!isBusy) {
                 setShowLogin(false);
-                navigate('/forgot-password');
+                window.location.assign('/forgot-password');
               }
             }}
           >
