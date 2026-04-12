@@ -5,6 +5,7 @@ import { assets } from '../../assets/assets';
 
 const SpecialSections = () => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [parallax, setParallax] = useState({ x: 0, y: 0 });
   const wrapperRef = useRef(null);
 
   const sections = [
@@ -59,8 +60,34 @@ const SpecialSections = () => {
 
   const activeSection = sections[activeIndex];
 
+  const handleParallaxMove = (event) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const px = (event.clientX - rect.left) / rect.width;
+    const py = (event.clientY - rect.top) / rect.height;
+
+    const x = (px - 0.5) * 2;
+    const y = (py - 0.5) * 2;
+
+    setParallax({ x, y });
+  };
+
+  const resetParallax = () => setParallax({ x: 0, y: 0 });
+
   return (
     <section ref={wrapperRef} className="special-sections-container">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeSection.id}
+          className="special-bg-blur"
+          initial={{ opacity: 0, scale: 1.06 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 1.1 }}
+          transition={{ duration: 0.8, ease: 'easeInOut' }}
+          style={{ backgroundImage: `url(${activeSection.image})` }}
+        />
+      </AnimatePresence>
+      <div className="special-bg-overlay" />
+
       <div className="content-grid">
         {/* Left Side: Text Content */}
         <div className="text-content-pane">
@@ -81,14 +108,28 @@ const SpecialSections = () => {
         </div>
 
         {/* Right Side: Image */}
-        <div className="image-pane">
+        <motion.div
+          className="image-pane"
+          onMouseMove={handleParallaxMove}
+          onMouseLeave={resetParallax}
+          animate={{
+            rotateX: -parallax.y * 5,
+            rotateY: parallax.x * 7,
+          }}
+          transition={{ type: 'spring', stiffness: 120, damping: 15, mass: 0.8 }}
+        >
           <AnimatePresence mode="wait">
             <motion.img
               key={activeIndex}
               src={activeSection.image}
               alt={activeSection.title}
               initial={{ opacity: 0, scale: 1.05 }}
-              animate={{ opacity: 1, scale: 1 }}
+              animate={{
+                opacity: 1,
+                scale: 1,
+                x: -parallax.x * 16,
+                y: -parallax.y * 12,
+              }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.7, ease: 'easeInOut' }}
               className="feature-image"
@@ -97,7 +138,7 @@ const SpecialSections = () => {
               }}
             />
           </AnimatePresence>
-        </div>
+        </motion.div>
       </div>
 
       {/* Navigation Dots */}
