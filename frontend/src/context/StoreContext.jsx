@@ -7,27 +7,12 @@ export const useStore = () => useContext(StoreContext);
 
 const StoreContextProvider = ({ children }) => {
   const url = import.meta.env.VITE_API_URL || "https://online-food-delivary-backend2.onrender.com";
-  const GUEST_CART_KEY = "guest_cart_items";
 
   const hasValidToken = (value) => Boolean(value && value !== "undefined" && value !== "null");
 
-  const parseGuestCart = () => {
-    try {
-      const raw = localStorage.getItem(GUEST_CART_KEY);
-      const parsed = raw ? JSON.parse(raw) : {};
-      return parsed && typeof parsed === "object" ? parsed : {};
-    } catch (error) {
-      return {};
-    }
-  };
-
-  const saveGuestCart = (cart) => {
-    localStorage.setItem(GUEST_CART_KEY, JSON.stringify(cart || {}));
-  };
-
   const [token, setToken] = useState("");
   const [food_list, setFoodlist] = useState([]); // always array
-  const [cartItems, setCartItems] = useState(parseGuestCart); // always object
+  const [cartItems, setCartItems] = useState({}); // always object
   const [loading, setLoading] = useState(true);
 
   // ================= FETCH FOOD LIST =================
@@ -61,20 +46,6 @@ const StoreContextProvider = ({ children }) => {
     }
   };
 
-  const mergeGuestCartToServer = async (authToken, guestCart) => {
-    const entries = Object.entries(guestCart || {}).filter(([, qty]) => Number(qty) > 0);
-
-    for (const [itemId, qty] of entries) {
-      for (let i = 0; i < Number(qty); i += 1) {
-        await axios.post(
-          `${url}/api/cart/add`,
-          { itemId },
-          { headers: { token: authToken } }
-        );
-      }
-    }
-  };
-
   // ================= INITIAL LOAD =================
   useEffect(() => {
     const loadData = async () => {
@@ -91,32 +62,11 @@ const StoreContextProvider = ({ children }) => {
 
   useEffect(() => {
     if (hasValidToken(token)) {
-      const syncCart = async () => {
-        const guestCart = parseGuestCart();
-
-        if (Object.keys(guestCart).length > 0) {
-          try {
-            await mergeGuestCartToServer(token, guestCart);
-            localStorage.removeItem(GUEST_CART_KEY);
-          } catch (error) {
-            console.error("Error merging guest cart:", error);
-          }
-        }
-
-        await loadCartData(token);
-      };
-
-      syncCart();
+      loadCartData(token);
       return;
     }
-    setCartItems(parseGuestCart());
+    setCartItems({});
   }, [token]);
-
-  useEffect(() => {
-    if (!hasValidToken(token)) {
-      saveGuestCart(cartItems);
-    }
-  }, [cartItems, token]);
 
   // ================= ADD TO CART =================
   const addToCart = async (itemId) => {

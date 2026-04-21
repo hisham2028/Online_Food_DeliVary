@@ -5,8 +5,8 @@ import { assets } from '../../assets/assets';
 
 const SpecialSections = () => {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [parallax, setParallax] = useState({ x: 0, y: 0 });
   const wrapperRef = useRef(null);
+  const lastWheelTime = useRef(0);
 
   const sections = [
     {
@@ -30,48 +30,43 @@ const SpecialSections = () => {
   ];
 
   const handleWheel = (event) => {
-    // A simple debounce mechanism
-    if (Date.now() - (lastWheelTime.current || 0) < 800) return;
-    lastWheelTime.current = Date.now();
-
     const direction = event.deltaY > 0 ? 1 : -1;
+    const isFirst = activeIndex === 0;
+    const isLast = activeIndex === sections.length - 1;
+
+    if ((direction < 0 && isFirst) || (direction > 0 && isLast)) {
+      return;
+    }
+
+    event.preventDefault();
+
+    if (Date.now() - lastWheelTime.current < 420) {
+      return;
+    }
+
+    lastWheelTime.current = Date.now();
     setActiveIndex((prev) => {
       const next = prev + direction;
-      if (next < 0) return sections.length - 1; // Loop to last
-      if (next >= sections.length) return 0; // Loop to first
+      if (next < 0) return 0;
+      if (next >= sections.length) return sections.length - 1;
       return next;
     });
   };
-  
-  const lastWheelTime = useRef(null);
 
   useEffect(() => {
     const currentWrapper = wrapperRef.current;
     if (currentWrapper) {
-      currentWrapper.addEventListener('wheel', handleWheel, { passive: true });
+      currentWrapper.addEventListener('wheel', handleWheel, { passive: false });
     }
     return () => {
       if (currentWrapper) {
         currentWrapper.removeEventListener('wheel', handleWheel);
       }
     };
-  }, []);
+  }, [activeIndex]);
 
 
   const activeSection = sections[activeIndex];
-
-  const handleParallaxMove = (event) => {
-    const rect = event.currentTarget.getBoundingClientRect();
-    const px = (event.clientX - rect.left) / rect.width;
-    const py = (event.clientY - rect.top) / rect.height;
-
-    const x = (px - 0.5) * 2;
-    const y = (py - 0.5) * 2;
-
-    setParallax({ x, y });
-  };
-
-  const resetParallax = () => setParallax({ x: 0, y: 0 });
 
   return (
     <section ref={wrapperRef} className="special-sections-container">
@@ -89,7 +84,6 @@ const SpecialSections = () => {
       <div className="special-bg-overlay" />
 
       <div className="content-grid">
-        {/* Left Side: Text Content */}
         <div className="text-content-pane">
           <AnimatePresence mode="wait">
             <motion.div
@@ -107,50 +101,41 @@ const SpecialSections = () => {
           </AnimatePresence>
         </div>
 
-        {/* Right Side: Image */}
-        <motion.div
-          className="image-pane"
-          onMouseMove={handleParallaxMove}
-          onMouseLeave={resetParallax}
-          animate={{
-            rotateX: -parallax.y * 5,
-            rotateY: parallax.x * 7,
-          }}
-          transition={{ type: 'spring', stiffness: 120, damping: 15, mass: 0.8 }}
-        >
-          <AnimatePresence mode="wait">
-            <motion.img
-              key={activeIndex}
-              src={activeSection.image}
-              alt={activeSection.title}
-              initial={{ opacity: 0, scale: 1.05 }}
-              animate={{
-                opacity: 1,
-                scale: 1,
-                x: -parallax.x * 16,
-                y: -parallax.y * 12,
-              }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.7, ease: 'easeInOut' }}
-              className="feature-image"
-              onError={(e) => {
-                e.target.style.display = 'none';
-              }}
-            />
-          </AnimatePresence>
-        </motion.div>
+        <div className="carousel-viewport" aria-label="Special sections horizontal carousel">
+          <motion.div
+            className="carousel-track"
+            animate={{ x: `-${activeIndex * 100}%` }}
+            transition={{ type: 'spring', stiffness: 90, damping: 18 }}
+          >
+            {sections.map((section) => (
+              <article key={section.id} className="carousel-slide">
+                <img
+                  src={section.image}
+                  alt={section.title}
+                  className="feature-image"
+                  onError={(e) => {
+                    e.currentTarget.style.visibility = 'hidden';
+                  }}
+                />
+                <div className="slide-shine" />
+              </article>
+            ))}
+          </motion.div>
+        </div>
       </div>
 
-      {/* Navigation Dots */}
       <div className="carousel-dots">
         {sections.map((_, index) => (
           <button
             key={index}
             className={`dot ${index === activeIndex ? 'active' : ''}`}
             onClick={() => setActiveIndex(index)}
+            aria-label={`Go to section ${index + 1}`}
           />
         ))}
       </div>
+
+      <p className="wheel-hint">Scroll inside this section to move horizontally</p>
     </section>
   );
 };
