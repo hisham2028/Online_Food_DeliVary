@@ -68,6 +68,7 @@ You should see: "API Working Successfully"
 ### User Routes (`/api/user`)
 - `POST /register` - Register new user
 - `POST /login` - Login user
+- `POST /social-login` - Social login / register via Firebase (Google, Facebook)
 - `GET /profile` - Get user profile (requires auth)
 
 ### Food Routes (`/api/food`)

@@ -33,6 +33,57 @@ A full-stack food delivery web application with a customer-facing storefront, an
 - Stripe payment integration
 - Rate limiting
 
+## Firebase Setup (Social Login)
+
+Social login via Google and Facebook is powered by [Firebase Authentication](https://firebase.google.com/docs/auth).  
+Follow these steps to enable it for your own deployment.
+
+### 1. Create a Firebase project
+
+1. Go to the [Firebase Console](https://console.firebase.google.com/) and click **Add project**.
+2. Enter a project name, accept the terms, and click **Continue** through the optional steps.
+3. Once the project is created, click **Continue** to reach the project dashboard.
+
+### 2. Register your web app
+
+1. On the project dashboard click the **Web** icon ( `</>` ).
+2. Enter an app nickname (e.g. `food-delivery`) and click **Register app**.
+3. Firebase will display a `firebaseConfig` object.  Copy the values — you will need them in the next step.
+
+### 3. Enable Authentication providers
+
+1. In the left sidebar go to **Build → Authentication** and click **Get started**.
+2. Open the **Sign-in method** tab.
+3. Enable **Google** — just click the toggle, choose a project support email, and save.
+4. Enable **Facebook** — you need a Facebook App ID and secret from the [Meta for Developers](https://developers.facebook.com/) portal.  Enter them and save.
+
+### 4. Add your domain to authorised domains
+
+1. In the **Sign-in method** tab scroll down to **Authorised domains**.
+2. Add `localhost` (already there by default) and any production domain you use.
+
+### 5. Configure the frontend environment variables
+
+Copy the example file and fill in the values from step 2:
+
+```bash
+cp frontend/.env.example frontend/.env
+```
+
+```
+VITE_FIREBASE_API_KEY=<apiKey>
+VITE_FIREBASE_AUTH_DOMAIN=<authDomain>
+VITE_FIREBASE_PROJECT_ID=<projectId>
+VITE_FIREBASE_STORAGE_BUCKET=<storageBucket>
+VITE_FIREBASE_MESSAGING_SENDER_ID=<messagingSenderId>
+VITE_FIREBASE_APP_ID=<appId>
+```
+
+All six values come from the `firebaseConfig` object shown when you registered the web app.
+
+> **Note:** Firebase credentials are only required for the Google / Facebook login buttons.  
+> Email/password registration and login work without them.
+
 ## Prerequisites
 
 - **Node.js** v16+

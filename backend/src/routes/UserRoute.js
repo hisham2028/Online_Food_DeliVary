@@ -24,6 +24,7 @@ class UserRoute {
   initializeRoutes() {
     this.router.post("/register", this.authLimiter, this.controller.register);
     this.router.post("/login", this.authLimiter, this.controller.login);
+    this.router.post("/social-login", this.authLimiter, this.controller.socialLogin);
     this.router.get("/verify-email/:token", this.controller.verifyEmail);
     this.router.post("/forgot-password", this.authLimiter, this.controller.forgotPassword);
     this.router.post("/verify-reset-code", this.authLimiter, this.controller.verifyResetCode);

@@ -50,6 +50,10 @@ class UserController {
         return res.status(401).json({ success: false, message: "User does not exist" });
       }
 
+      if (!user.password) {
+        return res.status(400).json({ success: false, message: "This account uses social login. Please sign in with Google or Facebook." });
+      }
+
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
         return res.status(401).json({ success: false, message: "Invalid credentials" });
@@ -308,6 +312,74 @@ class UserController {
     } catch (error) {
       console.error('RESET PASSWORD ERROR:', error);
       res.status(500).json({ success: false, message: 'Server Error' });
+    }
+  }
+
+  socialLogin = async (req, res) => {
+    try {
+      const { name, email, firebaseUid, provider, photoURL } = req.body;
+
+      if (!name || !email || !firebaseUid || !provider) {
+        return res.status(400).json({ success: false, message: "Missing required fields" });
+      }
+
+      if (!validator.isEmail(email)) {
+        return res.status(400).json({ success: false, message: "Invalid email address" });
+      }
+
+      if (!['google', 'facebook'].includes(provider)) {
+        return res.status(400).json({ success: false, message: "Unsupported provider" });
+      }
+
+      const normalizedEmail = this.normalizeEmail(email);
+
+      // Check if a user with this Firebase UID already exists
+      let user = await this.userModel.findByFirebaseUid(firebaseUid);
+
+      if (!user) {
+        // No user with this UID — look up by email
+        user = await this.userModel.findByEmail(normalizedEmail);
+
+        if (user) {
+          // Email exists — verify the Firebase-provided email matches before linking
+          if (user.email !== normalizedEmail) {
+            return res.status(409).json({ success: false, message: "Email mismatch. Unable to link accounts." });
+          }
+          // Link Firebase account to existing local account
+          await this.userModel.updateById(user._id, {
+            firebaseUid,
+            provider,
+            isVerified: true,
+            ...(photoURL ? { photoURL } : {})
+          });
+          user = await this.userModel.findById(user._id.toString());
+        } else {
+          // Brand-new social user
+          user = await this.userModel.create({
+            name: name.trim(),
+            email: normalizedEmail,
+            firebaseUid,
+            provider,
+            isVerified: true,
+            ...(photoURL ? { photoURL } : {})
+          });
+        }
+      }
+
+      const token = this.authMiddleware.generateToken(user._id);
+      return res.json({
+        success: true,
+        token,
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          photoURL: user.photoURL
+        }
+      });
+    } catch (error) {
+      console.error("SOCIAL LOGIN ERROR:", error.message);
+      res.status(500).json({ success: false, message: "Server Error" });
     }
   }
 
