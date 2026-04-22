@@ -38,7 +38,7 @@ A full-stack food delivery web application with a customer-facing storefront, an
 - **Node.js** v16+
 - **MongoDB** v5+
 - A **Stripe** account (for card payments)
-- A **Firebase** project (for social login — optional)
+- A **Firebase** project (for social login — optional, see [FIREBASE_SETUP.md](./FIREBASE_SETUP.md))
 - A **Cloudinary** account (for image uploads)
 
 ## Getting Started

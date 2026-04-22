@@ -24,7 +24,8 @@ cd frontend
 npm install
 ```
 
-Copy `.env.example` to `.env` and fill in your Firebase credentials (required only for social login):
+Copy `.env.example` to `.env` and fill in your Firebase credentials (required only for social login).  
+See the [Firebase Setup Guide](../FIREBASE_SETUP.md) for step-by-step instructions on creating a Firebase project and enabling Google/Facebook authentication.
 
 ```bash
 cp .env.example .env
