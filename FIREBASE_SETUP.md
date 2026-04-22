@@ -78,6 +78,7 @@ This guide walks you through creating a Firebase project and enabling Google and
    VITE_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
    VITE_FIREBASE_MESSAGING_SENDER_ID=123456789012
    VITE_FIREBASE_APP_ID=1:123456789012:web:abcdef123456789
+   VITE_FIREBASE_MEASUREMENT_ID=G-XXXXXXXXXX
    ```
 
    | Variable | Where to find it |
@@ -88,6 +89,7 @@ This guide walks you through creating a Firebase project and enabling Google and
    | `VITE_FIREBASE_STORAGE_BUCKET` | Same location — `storageBucket` field |
    | `VITE_FIREBASE_MESSAGING_SENDER_ID` | Same location — `messagingSenderId` field |
    | `VITE_FIREBASE_APP_ID` | Same location — `appId` field |
+   | `VITE_FIREBASE_MEASUREMENT_ID` | Same location — `measurementId` field (if Analytics is enabled) |
 
 ---
 
