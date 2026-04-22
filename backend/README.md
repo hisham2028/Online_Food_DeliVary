@@ -29,6 +29,12 @@ JWT_SECRET=your_secure_random_string_here
 STRIPE_SECRET_KEY=your_stripe_secret_key
 PORT=4000
 FRONTEND_URL=http://localhost:5173
+BACKEND_URL=http://localhost:4000
+
+# Firebase Admin credentials (required for social login)
+FIREBASE_PROJECT_ID=your-firebase-project-id
+FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxxxx@your-firebase-project-id.iam.gserviceaccount.com
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYOUR_PRIVATE_KEY\n-----END PRIVATE KEY-----\n"
 ```
 
 ### Step 4: Start MongoDB
@@ -68,6 +74,7 @@ You should see: "API Working Successfully"
 ### User Routes (`/api/user`)
 - `POST /register` - Register new user
 - `POST /login` - Login user
+- `POST /social-login` - Login/register with verified Google/Facebook Firebase token
 - `GET /profile` - Get user profile (requires auth)
 
 ### Food Routes (`/api/food`)

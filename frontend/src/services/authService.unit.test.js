@@ -35,6 +35,7 @@ describe('authService unit tests', () => {
       email: 'user@example.com',
       uid: 'uid-1',
       photoURL: 'photo-url',
+      getIdToken: vi.fn().mockResolvedValue('firebase-id-token-google'),
     };
 
     mockSignInWithPopup.mockResolvedValueOnce({ user: fakeUser });
@@ -53,6 +54,13 @@ describe('authService unit tests', () => {
     expect(result.token).toBe('token-123');
     expect(localStorage.getItem('token')).toBe('token-123');
     expect(mockAxiosPost).toHaveBeenCalledTimes(1);
+    expect(mockAxiosPost).toHaveBeenCalledWith(
+      'http://localhost:4000/api/user/social-login',
+      {
+        idToken: 'firebase-id-token-google',
+        provider: 'google',
+      }
+    );
   });
 
   it('signInWithFacebook throws when backend responds with success false', async () => {
@@ -61,6 +69,7 @@ describe('authService unit tests', () => {
       email: 'meta@example.com',
       uid: 'uid-2',
       photoURL: 'photo-url-2',
+      getIdToken: vi.fn().mockResolvedValue('firebase-id-token-facebook'),
     };
 
     mockSignInWithPopup.mockResolvedValueOnce({ user: fakeUser });

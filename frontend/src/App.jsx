@@ -71,11 +71,11 @@ const App = () => {
               } />
 
               <Route path="/cart" element={
-                <PageTransition><Cart setShowLogin={setShowLogin} /></PageTransition>
+                <PageTransition><Cart /></PageTransition>
               } />
 
               <Route path="/order" element={
-                <PageTransition><PlaceOrder setShowLogin={setShowLogin} /></PageTransition>
+                <PageTransition><PlaceOrder /></PageTransition>
               } />
 
               <Route path="/verify" element={

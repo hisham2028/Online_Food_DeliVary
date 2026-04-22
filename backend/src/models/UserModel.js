@@ -7,6 +7,9 @@ class UserModel {
       email: { type: String, required: true, unique: true },
       password: { type: String, required: true },
       cartData: { type: Object, default: {} },
+      provider: { type: String, enum: ['local', 'google', 'facebook'], default: 'local' },
+      firebaseUid: { type: String, sparse: true },
+      photoURL: { type: String, default: '' },
       isVerified: { type: Boolean, default: false },           // ✅ new
       verificationToken: { type: String },                     // ✅ new
       verificationTokenExpire: { type: Date },                 // ✅ new

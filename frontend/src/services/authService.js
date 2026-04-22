@@ -16,19 +16,15 @@ class AuthService {
   async signInWithGoogle() {
     try {
       const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
+      const idToken = await result.user.getIdToken();
 
-      // Prepare user data for backend
-      const userData = {
-        name: user.displayName,
-        email: user.email,
-        firebaseUid: user.uid,
-        provider: 'google',
-        photoURL: user.photoURL
+      // Send ID token to backend for verification and JWT issuance
+      const payload = {
+        idToken,
+        provider: 'google'
       };
 
-      // Send to backend for registration/login
-      const response = await axios.post(`${this.url}/api/user/social-login`, userData);
+      const response = await axios.post(`${this.url}/api/user/social-login`, payload);
 
       if (response.data.success) {
         localStorage.setItem("token", response.data.token);
@@ -50,19 +46,15 @@ class AuthService {
   async signInWithFacebook() {
     try {
       const result = await signInWithPopup(auth, facebookProvider);
-      const user = result.user;
+      const idToken = await result.user.getIdToken();
 
-      // Prepare user data for backend
-      const userData = {
-        name: user.displayName,
-        email: user.email,
-        firebaseUid: user.uid,
-        provider: 'facebook',
-        photoURL: user.photoURL
+      // Send ID token to backend for verification and JWT issuance
+      const payload = {
+        idToken,
+        provider: 'facebook'
       };
 
-      // Send to backend for registration/login
-      const response = await axios.post(`${this.url}/api/user/social-login`, userData);
+      const response = await axios.post(`${this.url}/api/user/social-login`, payload);
 
       if (response.data.success) {
         localStorage.setItem("token", response.data.token);
