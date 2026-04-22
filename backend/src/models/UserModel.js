@@ -5,13 +5,16 @@ class UserModel {
     this.schema = new mongoose.Schema({
       name: { type: String, required: true },
       email: { type: String, required: true, unique: true },
-      password: { type: String, required: true },
+      password: { type: String },
       cartData: { type: Object, default: {} },
-      isVerified: { type: Boolean, default: false },           // ✅ new
-      verificationToken: { type: String },                     // ✅ new
-      verificationTokenExpire: { type: Date },                 // ✅ new
+      isVerified: { type: Boolean, default: false },
+      verificationToken: { type: String },
+      verificationTokenExpire: { type: Date },
       resetPasswordToken: { type: String },
-      resetPasswordExpire: { type: Date }
+      resetPasswordExpire: { type: Date },
+      firebaseUid: { type: String, unique: true, sparse: true },
+      provider: { type: String, enum: ['local', 'google', 'facebook'], default: 'local' },
+      photoURL: { type: String }
     }, { 
       minimize: false, 
       timestamps: true
@@ -44,6 +47,13 @@ class UserModel {
     return await this.model.findOne({
       email: { $regex: new RegExp(`^${escapedEmail}$`, 'i') }
     });
+  }
+
+  async findByFirebaseUid(firebaseUid) {
+    if (typeof firebaseUid !== "string" || !firebaseUid) {
+      return null;
+    }
+    return await this.model.findOne({ firebaseUid });
   }
 
   async findByVerificationToken(token) {
