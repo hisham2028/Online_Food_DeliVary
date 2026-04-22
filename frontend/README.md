@@ -41,6 +41,7 @@ cp .env.example .env
 | `VITE_FIREBASE_STORAGE_BUCKET` | Firebase storage bucket | — |
 | `VITE_FIREBASE_MESSAGING_SENDER_ID` | Firebase messaging sender ID | — |
 | `VITE_FIREBASE_APP_ID` | Firebase app ID | — |
+| `VITE_FIREBASE_MEASUREMENT_ID` | Firebase analytics measurement ID | — |
 
 ## Running
 
