@@ -4,6 +4,7 @@ import validator from "validator";
 import AuthMiddleware from "../middleware/AuthMiddleware.js";
 import crypto from "node:crypto";
 import EmailService from "../services/EmailService.js";
+import FirebaseAdmin from "../config/FirebaseAdmin.js";
 
 class UserController {
   constructor() {
@@ -73,6 +74,89 @@ class UserController {
     } catch (error) {
       console.error("LOGIN ERROR:", error);
       res.status(500).json({ success: false, message: "Server Error" });
+    }
+  }
+
+  socialLogin = async (req, res) => {
+    try {
+      const { idToken, provider } = req.body;
+
+      if (!idToken || !provider) {
+        return res.status(400).json({ success: false, message: "idToken and provider are required" });
+      }
+
+      if (!["google", "facebook"].includes(provider)) {
+        return res.status(400).json({ success: false, message: "Unsupported social provider" });
+      }
+
+      const auth = FirebaseAdmin.getAuth();
+      const decodedToken = await auth.verifyIdToken(idToken, true);
+      const firebaseProvider = decodedToken.firebase?.sign_in_provider;
+      const providerMap = {
+        "google.com": "google",
+        "facebook.com": "facebook",
+      };
+      const normalizedFirebaseProvider = providerMap[firebaseProvider] || firebaseProvider;
+
+      if (normalizedFirebaseProvider && provider !== normalizedFirebaseProvider) {
+        return res.status(400).json({ success: false, message: "Provider mismatch in social authentication" });
+      }
+
+      if (!decodedToken.email) {
+        return res.status(400).json({ success: false, message: "Email is required from social provider" });
+      }
+
+      const normalizedEmail = this.normalizeEmail(decodedToken.email);
+      let user = await this.userModel.findByEmail(normalizedEmail);
+      const displayName = decodedToken.name || normalizedEmail.split("@")[0];
+
+      if (!user) {
+        // Social users do not provide a local password. Store a random hash to satisfy schema requirements.
+        const randomPassword = crypto.randomBytes(32).toString("hex");
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(randomPassword, salt);
+
+        user = await this.userModel.create({
+          name: displayName,
+          email: normalizedEmail,
+          password: hashedPassword,
+          isVerified: true,
+          provider,
+          firebaseUid: decodedToken.uid,
+          photoURL: decodedToken.picture || "",
+        });
+      } else {
+        const updates = {
+          isVerified: true,
+          provider: user.provider || provider,
+          firebaseUid: user.firebaseUid || decodedToken.uid,
+        };
+
+        if (!user.name && displayName) {
+          updates.name = displayName;
+        }
+
+        if (!user.photoURL && decodedToken.picture) {
+          updates.photoURL = decodedToken.picture;
+        }
+
+        user = await this.userModel.updateById(user._id, updates);
+      }
+
+      const token = this.authMiddleware.generateToken(user._id);
+      return res.json({
+        success: true,
+        token,
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          provider: user.provider || provider,
+        },
+      });
+    } catch (error) {
+      console.error("SOCIAL LOGIN ERROR:", error);
+      return res.status(401).json({ success: false, message: "Social authentication failed" });
     }
   }
 
