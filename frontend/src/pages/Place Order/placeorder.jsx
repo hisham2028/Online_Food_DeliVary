@@ -10,7 +10,7 @@ const formatPrices = (value) => {
     return `৳${amount}`;
 };
 
-const PlaceOrder = () => {
+const PlaceOrder = ({ setShowLogin = () => {} }) => {
     const { getTotalCartAmount, token, food_list, cartItems, url } = useStore();
     const navigate = useNavigate();
     const [method, setMethod] = useState("cod");
@@ -41,7 +41,7 @@ const PlaceOrder = () => {
         const authToken = token || localStorage.getItem('token');
 
         if (!hasValidToken(authToken)) {
-            toast.error('Please login to continue');
+            setShowLogin(true);
             navigate('/cart');
             return;
         }
@@ -49,14 +49,14 @@ const PlaceOrder = () => {
         if (getTotalCartAmount() === 0) {
             navigate('/cart');
         }
-    }, [token, getTotalCartAmount, navigate]); 
+    }, [token, getTotalCartAmount, navigate, setShowLogin]); 
 
     const placeOrder = async (event) => {
         event.preventDefault();
 
         const authToken = token || localStorage.getItem('token');
         if (!hasValidToken(authToken)) {
-            toast.error('Please login to continue');
+            setShowLogin(true);
             navigate('/cart');
             return;
         }

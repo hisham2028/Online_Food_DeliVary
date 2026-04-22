@@ -7,6 +7,8 @@ const SpecialSections = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const wrapperRef = useRef(null);
   const lastWheelTime = useRef(0);
+  const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
 
   const sections = [
     {
@@ -68,6 +70,38 @@ const SpecialSections = () => {
 
   const activeSection = sections[activeIndex];
 
+  const goToNext = () => {
+    setActiveIndex((prev) => Math.min(prev + 1, sections.length - 1));
+  };
+
+  const goToPrev = () => {
+    setActiveIndex((prev) => Math.max(prev - 1, 0));
+  };
+
+  const handleTouchStart = (event) => {
+    const touch = event.touches[0];
+    touchStartX.current = touch.clientX;
+    touchStartY.current = touch.clientY;
+  };
+
+  const handleTouchEnd = (event) => {
+    const touch = event.changedTouches[0];
+    const deltaX = touch.clientX - touchStartX.current;
+    const deltaY = touch.clientY - touchStartY.current;
+
+    // Ignore mostly vertical gestures so normal page scroll still works.
+    if (Math.abs(deltaY) > Math.abs(deltaX)) {
+      return;
+    }
+
+    const swipeThreshold = 45;
+    if (deltaX <= -swipeThreshold) {
+      goToNext();
+    } else if (deltaX >= swipeThreshold) {
+      goToPrev();
+    }
+  };
+
   return (
     <section ref={wrapperRef} className="special-sections-container">
       <AnimatePresence mode="wait">
@@ -106,6 +140,8 @@ const SpecialSections = () => {
             className="carousel-track"
             animate={{ x: `-${activeIndex * 100}%` }}
             transition={{ type: 'spring', stiffness: 90, damping: 18 }}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
           >
             {sections.map((section) => (
               <article key={section.id} className="carousel-slide">
